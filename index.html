@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>разработчик.ру — 10x Инженер™</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=VT323&family=Unbounded:wght@900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#00ff41;--r:#ff2d55;--y:#ffe600;--b:#00d4ff;
+  --bg:#080808;--card:#0f0f0f;--border:#1f1f1f;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--g);
+  font-family:'VT323',monospace;font-size:1.35rem;
+  cursor:none;overflow-x:hidden;
+}
+#cur{width:16px;height:16px;border:2px solid var(--g);position:fixed;pointer-events:none;
+  z-index:9999;transition:transform .08s,border-color .15s;mix-blend-mode:screen;rotate:45deg;}
+#cur.big{transform:scale(3);border-color:var(--y);}
+#curdot{width:4px;height:4px;background:var(--g);border-radius:50%;position:fixed;
+  pointer-events:none;z-index:9999;margin:-2px;}
+body::after{content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.025) 2px,rgba(0,255,65,.025) 4px);
+  pointer-events:none;z-index:9997;}
+#mx{position:fixed;inset:0;opacity:.06;pointer-events:none;z-index:0;}
+nav{position:fixed;top:0;width:100%;z-index:200;display:flex;justify-content:center;
+  flex-wrap:wrap;gap:.3rem;padding:.65rem 1rem;
+  background:rgba(8,8,8,.9);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);}
+nav a{font-family:'Russo One',sans-serif;font-size:.7rem;color:#3a3a3a;
+  text-decoration:none;padding:.3rem .65rem;letter-spacing:.08em;
+  transition:color .2s,text-shadow .2s;}
+nav a:hover{color:var(--g);text-shadow:0 0 12px var(--g);}
+#hero{position:relative;z-index:1;min-height:100vh;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:5rem 1.5rem 3rem;gap:1.8rem;}
+.big-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:clamp(2.4rem,10vw,7rem);
+  font-weight:900;line-height:.9;
+  color:var(--g);
+  text-shadow:0 0 20px var(--g),0 0 60px rgba(0,255,65,.4);
+  position:relative;
+}
+.big-title::before{content:attr(data-t);position:absolute;inset:0;
+  color:var(--r);opacity:.7;animation:gt 3s infinite;
+  clip-path:polygon(0 0,100% 0,100% 40%,0 40%);}
+.big-title::after{content:attr(data-t);position:absolute;inset:0;
+  color:var(--b);opacity:.7;animation:gb 2.5s infinite;
+  clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);}
+@keyframes gt{0%,89%,100%{transform:none}90%{transform:translate(-5px,-2px)}94%{transform:translate(5px,1px)}}
+@keyframes gb{0%,85%,100%{transform:none}87%{transform:translate(5px,3px)}91%{transform:translate(-3px,-1px)}}
+.hero-sub{font-family:'Russo One',sans-serif;font-size:clamp(.55rem,1.8vw,.9rem);
+  color:#3a3a3a;letter-spacing:.2em;animation:fi 1s .4s both;}
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;animation:fi 1s .7s both;}
+.badge{padding:.35rem .9rem;border:1px solid;font-size:1.05rem;
+  transition:transform .2s,background .2s;cursor:none;}
+.badge.g{border-color:var(--g);color:var(--g);background:rgba(0,255,65,.05);}
+.badge.r{border-color:var(--r);color:var(--r);background:rgba(255,45,85,.05);}
+.badge.y{border-color:var(--y);color:var(--y);background:rgba(255,230,0,.05);}
+.badge.b{border-color:var(--b);color:var(--b);background:rgba(0,212,255,.05);}
+.badge:hover{transform:translateY(-4px) rotate(-1deg);}
+.term{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--g);
+  padding:1.4rem 1.6rem;text-align:left;max-width:640px;width:100%;
+  font-size:1.2rem;line-height:1.9;animation:fi 1s 1s both;position:relative;}
+.term::before{content:'● ● ●';position:absolute;top:.5rem;left:.8rem;
+  font-size:.7rem;color:#2a2a2a;letter-spacing:.5rem;}
+.tp{color:#444;} .tc{color:var(--y);} .to{color:#777;} .te{color:var(--r);}
+.blink{animation:bl 1s step-end infinite;}
+@keyframes bl{50%{opacity:0;}}
+.down-hint{font-family:'Russo One',sans-serif;font-size:.5rem;color:#2a2a2a;
+  letter-spacing:.25em;animation:fi 1s 2.2s both,bob 2s 3s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+@keyframes fi{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+section{position:relative;z-index:1;padding:5rem 1.5rem;max-width:960px;margin:0 auto;}
+h2{font-family:'Unbounded',sans-serif;font-size:clamp(.75rem,2.5vw,1.1rem);
+  color:var(--y);border-bottom:1px solid var(--border);padding-bottom:1rem;
+  margin-bottom:3rem;letter-spacing:.05em;
+  text-shadow:0 0 20px rgba(255,230,0,.3);}
+h2 em{color:var(--r);font-style:normal;}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;}
+.mcard{background:var(--card);border:1px solid var(--border);padding:1.8rem 1.4rem;
+  text-align:center;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;}
+.mcard::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,.015));}
+.mcard:hover{transform:translateY(-6px);}
+.mcard.hg:hover{border-color:var(--g);}
+.mcard.hr:hover{border-color:var(--r);}
+.mcard.hy:hover{border-color:var(--y);}
+.mcard.hb:hover{border-color:var(--b);}
+.msvg{width:110px;height:110px;margin:0 auto 1.2rem;}
+.mtitle{font-family:'Russo One',sans-serif;font-size:.75rem;margin-bottom:.6rem;letter-spacing:.05em;}
+.mtitle.g{color:var(--g);} .mtitle.r{color:var(--r);} .mtitle.y{color:var(--y);} .mtitle.b{color:var(--b);}
+.mdesc{font-size:1.05rem;color:#555;line-height:1.65;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;}
+.scard{background:var(--card);border:1px solid var(--border);padding:1.3rem;
+  transition:border-color .2s,transform .2s;}
+.scard:hover{transform:translateY(-3px);}
+.sname{font-family:'Russo One',sans-serif;font-size:.65rem;margin-bottom:.6rem;color:var(--g);}
+.sbar{background:#181818;height:7px;overflow:hidden;margin-bottom:.4rem;}
+.sfill{height:100%;width:0;transition:width 1.6s cubic-bezier(.25,1,.5,1);}
+.sfill.g{background:linear-gradient(90deg,var(--g),#69ffad);}
+.sfill.r{background:linear-gradient(90deg,var(--r),#ff7b96);}
+.sfill.y{background:linear-gradient(90deg,var(--y),#fff09e);}
+.sfill.b{background:linear-gradient(90deg,var(--b),#a0f4ff);}
+.ssub{font-size:1rem;color:#3a3a3a;}
+.plist{display:flex;flex-direction:column;gap:1.2rem;}
+.pcard{background:var(--card);border:1px solid var(--border);
+  padding:1.4rem 1.6rem;display:flex;gap:1.4rem;align-items:flex-start;
+  transition:border-color .2s,transform .2s;}
+.pcard:hover{border-color:var(--r);transform:translateX(8px);}
+.psvg{width:64px;height:64px;flex-shrink:0;}
+.ptitle{font-family:'Russo One',sans-serif;font-size:.7rem;color:var(--y);margin-bottom:.5rem;letter-spacing:.03em;}
+.pdesc{color:#555;font-size:1.1rem;line-height:1.6;}
+.cbox{background:var(--card);border:1px solid var(--border);padding:2.5rem;text-align:center;}
+.cbox p{color:#444;margin-bottom:2rem;font-size:1.25rem;line-height:1.7;}
+.btns{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
+.btn{font-family:'Russo One',sans-serif;font-size:.6rem;padding:.8rem 1.6rem;
+  border:2px solid;text-decoration:none;display:inline-block;
+  transition:background .2s,color .2s,transform .2s;cursor:none;letter-spacing:.05em;}
+.btn.g{border-color:var(--g);color:var(--g);}
+.btn.g:hover{background:var(--g);color:#000;transform:translateY(-3px);}
+.btn.r{border-color:var(--r);color:var(--r);}
+.btn.r:hover{background:var(--r);color:#fff;transform:translateY(-3px);}
+footer{position:relative;z-index:1;text-align:center;padding:2rem;
+  border-top:1px solid var(--border);font-size:1rem;color:#2a2a2a;}
+footer span{color:var(--r);}
+.divider{border:none;border-top:1px solid var(--border);margin:0;}
+#toast{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--card);
+  border:1px solid var(--y);color:var(--y);
+  font-family:'Russo One',sans-serif;font-size:.55rem;
+  padding:1rem 1.3rem;z-index:9000;opacity:0;transform:translateY(16px);
+  transition:opacity .4s,transform .4s;max-width:260px;line-height:1.9;
+  pointer-events:none;letter-spacing:.05em;}
+#toast.on{opacity:1;transform:none;}
+#kona{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9990;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:2rem;}
+#kona.on{display:flex;}
+#kona h1{font-family:'Unbounded',sans-serif;font-size:clamp(1rem,4vw,2rem);
+  color:var(--y);text-shadow:0 0 40px var(--y);animation:bl .8s infinite;}
+#kona p{font-size:1.3rem;color:#555;}
+#kona button{font-family:'Russo One',sans-serif;font-size:.6rem;
+  padding:.8rem 2rem;border:2px solid var(--r);color:var(--r);
+  background:transparent;cursor:none;letter-spacing:.08em;
+  transition:background .2s,color .2s;}
+#kona button:hover{background:var(--r);color:#fff;}
+</style>
+</head>
+<body>
+<canvas id="mx"></canvas>
+<div id="cur"></div>
+<div id="curdot"></div>
+<div id="toast"></div>
+<div id="kona">
+  <h1>КОД АКТИВИРОВАН</h1>
+  <p style="color:var(--g);font-size:1.6rem;">ты официально 1000x разработчик</p>
+  <p>компилятор тебя уважает. кто то.</p>
+  <p style="font-size:.95rem;color:#333;">↑ ↑ ↓ ↓ ← → ← → B A</p>
+  <button onclick="document.getElementById('kona').classList.remove('on')">ПОНЯЛ, СПАСИБО</button>
+</div>
+<nav>
+  <a href="#hero">главная</a>
+  <a href="#skills">скиллы</a>
+  <a href="#memes">мемы</a>
+  <a href="#projects">проекты</a>
+  <a href="#contact">контакт</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="big-title" data-t="ДРУН.EXE">ДРУН.EXE</div>
+  <p class="hero-sub">// программист · stackoverflow-инженер · создатель багов с 2026 года</p>
+  <div class="badges">
+    <span class="badge g">✓ Работает на моей мошине™</span>
+    <span class="badge r">Спать</span>
+    <span class="badge y">Работает на энергосе</span>
+    <span class="badge b">Промпт-инженер</span>
+    <span class="badge g">git push --force</span>
+    <span class="badge r">npm install</span>
+    <span class="badge y">// TODO: переписать</span>
+  </div>
+  <div class="term">
+    <br/>
+    <span class="tp">user@prod:~$ </span><span class="tc">whoami</span><br/>
+    <span class="to">→ разработчик, который гуглит «как отцентрировать div» каждый раз</span><br/><br/>
+    <span class="tp">user@prod:~$ </span><span class="tc">git status</span><br/>
+    <span class="te">→ изменено 73 файла. коммит: «фикс». описание: пусто.</span><br/><br/>
+    <span class="tp">user@prod:~$ </span><span class="tc">npm start</span><br/>
+    <span class="te">→ ОШИБКА: не найден модуль './кокве'</span><br/><br/>
+    <span class="tp">user@prod:~$ </span><span class="tc">ls node_modules | wc -l</span><br/>
+    <span class="te">→ 174 819 &nbsp;&nbsp;// для hello world. всё нормально.</span><br/><br/>
+    <span class="tp">user@prod:~$ </span><span class="tc"><span class="blink">_</span></span>
+  </div>
+  <p class="down-hint">▼ СКРОЛЛЬ ВНИЗ ИЛИ ВСТРЕТЬ СУДЬБУ ▼</p>
+</section>
+<hr class="divider"/>
+
+<!-- SKILLS -->
+<section id="skills">
+  <h2>// мои <em>навыки</em>.json</h2>
+  <div class="sgrid">
+    <div class="scard"><div class="sname">JavaScript</div><div class="sbar"><div class="sfill g" data-w="95"></div></div><div class="ssub">в основном вайб</div></div>
+    <div class="scard"><div class="sname">CSS</div><div class="sbar"><div class="sfill y" data-w="38"></div></div><div class="ssub">position: молиться</div></div>
+    <div class="scard"><div class="sname">Git</div><div class="sbar"><div class="sfill r" data-w="72"></div></div><div class="ssub">push --force каждый день</div></div>
+    <div class="scard"><div class="sname">Гуглинг</div><div class="sbar"><div class="sfill g" data-w="100"></div></div><div class="ssub">уровень: бог</div></div>
+    <div class="scard"><div class="sname">Копипаст</div><div class="sbar"><div class="sfill b" data-w="99"></div></div><div class="ssub">ctrl+c ctrl+v профи</div></div>
+    <div class="scard"><div class="sname">Docker</div><div class="sbar"><div class="sfill r" data-w="25"></div></div><div class="ssub">в контейнере работает</div></div>
+    <div class="scard"><div class="sname">Документация</div><div class="sbar"><div class="sfill y" data-w="8"></div></div><div class="ssub">// todo: написать потом</div></div>
+    <div class="scard"><div class="sname">Дебаггинг</div><div class="sbar"><div class="sfill g" data-w="60"></div></div><div class="ssub">console.log везде</div></div>
+  </div>
+</section>
+<hr class="divider"/>
+
+<!-- MEMES -->
+<section id="memes">
+  <h2>// музей <em>правды</em></h2>
+  <div class="mgrid">
+
+    <!-- 1. 03:47 -->
+    <div class="mcard hg">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="scr1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00ff41" stop-opacity=".35"/><stop offset="100%" stop-color="#00ff41" stop-opacity="0"/></radialGradient></defs>
+          <rect x="15" y="28" width="80" height="54" rx="3" fill="#0a0a0a" stroke="#00ff41" stroke-width="2"/>
+          <rect x="21" y="34" width="68" height="40" fill="#001400"/>
+          <rect x="21" y="34" width="68" height="40" fill="url(#scr1)"/>
+          <line x1="27" y1="43" x2="62" y2="43" stroke="#00ff41" stroke-width="1.5" opacity=".8"/>
+          <line x1="27" y1="50" x2="74" y2="50" stroke="#ffe600" stroke-width="1.5" opacity=".8"/>
+          <line x1="27" y1="57" x2="46" y2="57" stroke="#ff2d55" stroke-width="2"/>
+          <line x1="27" y1="64" x2="66" y2="64" stroke="#00ff41" stroke-width="1.5" opacity=".4"/>
+          <text x="55" y="46" fill="#ff2d55" font-size="6" font-family="monospace" text-anchor="middle" opacity=".7">ERROR</text>
+          <rect x="47" y="82" width="16" height="6" fill="#161616" stroke="#2a2a2a"/>
+          <rect x="37" y="88" width="36" height="4" rx="1" fill="#161616" stroke="#2a2a2a"/>
+          <circle cx="55" cy="20" r="9" fill="#161616" stroke="#00ff41" stroke-width="1.5"/>
+          <line x1="50" y1="19" x2="53" y2="19" stroke="#00ff41" stroke-width="1.5"/>
+          <line x1="57" y1="19" x2="60" y2="19" stroke="#00ff41" stroke-width="1.5"/>
+          <path d="M49 22 Q51.5 24.5 54 22" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
+          <path d="M56 22 Q58.5 24.5 61 22" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
+          <ellipse cx="49" cy="24" rx="1" ry="2" fill="#00d4ff" opacity=".9"/>
+          <rect x="79" y="75" width="12" height="11" rx="1" fill="#161616" stroke="#ffe600" stroke-width="1.5"/>
+          <path d="M91 78 Q96 78 96 83 Q96 87 91 87" stroke="#ffe600" stroke-width="1.5" fill="none"/>
+          <path d="M83 73 Q84 70 83 67" stroke="#ffe600" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M86 72 Q87 69 86 66" stroke="#ffe600" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <rect x="89" y="6" width="18" height="12" rx="2" fill="#0a0000" stroke="#ff2d55" stroke-width="1.2"/>
+          <text x="98" y="15" fill="#ff2d55" font-size="5.5" font-family="monospace" text-anchor="middle">3:47</text>
+        </svg>
+      </div>
+      <div class="mtitle g">03:47 ночи</div>
+      <div class="mdesc">какая строчка<br/>— говорил я час назад</div>
+    </div>
+
+    <!-- 2. Баг или фича -->
+    <div class="mcard hr">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="55" y1="12" x2="55" y2="52" stroke="#ff2d55" stroke-width="2.5"/>
+          <circle cx="55" cy="11" r="5" fill="#ff2d55"/>
+          <line x1="18" y1="44" x2="92" y2="44" stroke="#ff2d55" stroke-width="2.5"/>
+          <!-- левая (баг — тяжелее, ниже) -->
+          <line x1="26" y1="44" x2="20" y2="66" stroke="#ff2d55" stroke-width="1.5"/>
+          <line x1="26" y1="44" x2="32" y2="66" stroke="#ff2d55" stroke-width="1.5"/>
+          <path d="M16 66 Q26 71 36 66" stroke="#ff2d55" stroke-width="2" fill="none"/>
+          <circle cx="26" cy="61" r="6" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
+          <circle cx="23" cy="59" r="1.5" fill="#ff2d55"/>
+          <circle cx="29" cy="59" r="1.5" fill="#ff2d55"/>
+          <path d="M23 64 Q26 66.5 29 64" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
+          <line x1="22" y1="56" x2="18" y2="52" stroke="#ff2d55" stroke-width="1.2"/>
+          <line x1="30" y1="56" x2="34" y2="52" stroke="#ff2d55" stroke-width="1.2"/>
+          <text x="26" y="78" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">БАГ</text>
+          <!-- правая (фича — выше) -->
+          <line x1="84" y1="44" x2="78" y2="34" stroke="#00ff41" stroke-width="1.5"/>
+          <line x1="84" y1="44" x2="90" y2="34" stroke="#00ff41" stroke-width="1.5"/>
+          <path d="M74 34 Q84 29 94 34" stroke="#00ff41" stroke-width="2" fill="none"/>
+          <text x="84" y="33" fill="#00ff41" font-size="11" text-anchor="middle">✓</text>
+          <text x="84" y="46" fill="#00ff41" font-size="6.5" font-family="monospace" text-anchor="middle">ФИЧА</text>
+          <!-- стрелка бага вниз -->
+          <text x="26" y="92" fill="#ff2d55" font-size="9" text-anchor="middle">↓</text>
+          <text x="84" y="92" fill="#00ff41" font-size="9" text-anchor="middle">↑</text>
+          <text x="55" y="105" fill="#555" font-size="5.5" font-family="monospace" text-anchor="middle">всегда фича</text>
+        </svg>
+      </div>
+      <div class="mtitle r">БАГ или ФИЧА?</div>
+      <div class="mdesc">всегда фича.<br/>просто нестандартное<br/>поведение системы.</div>
+    </div>
+
+    <!-- 3. node_modules -->
+    <div class="mcard hy">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="bh2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#000"/>
+              <stop offset="55%" stop-color="#0a0500"/>
+              <stop offset="100%" stop-color="#1a0d00"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="55" cy="55" rx="46" ry="17" fill="none" stroke="#ffe600" stroke-width="1" opacity=".25"/>
+          <ellipse cx="55" cy="55" rx="40" ry="13" fill="none" stroke="#ffe600" stroke-width="1.5" opacity=".45"/>
+          <ellipse cx="55" cy="55" rx="32" ry="9" fill="none" stroke="#ff8c00" stroke-width="2.5" opacity=".7"/>
+          <circle cx="55" cy="55" r="24" fill="url(#bh2)"/>
+          <circle cx="55" cy="55" r="24" stroke="#ff8c00" stroke-width="1.5" opacity=".35"/>
+          <text x="55" y="51" fill="#ffe600" font-size="5.5" font-family="monospace" text-anchor="middle">node_</text>
+          <text x="55" y="59" fill="#ffe600" font-size="5.5" font-family="monospace" text-anchor="middle">modules</text>
+          <text x="55" y="98" fill="#ffe600" font-size="6.5" font-family="monospace" text-anchor="middle">3.2 ГБ</text>
+          <!-- падающие файлы -->
+          <rect x="8" y="28" width="9" height="7" rx="1" fill="#333"/>
+          <text x="12" y="34" fill="#aaa" font-size="4" text-anchor="middle">.js</text>
+          <path d="M17 35 Q30 44 32 50" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
+          <rect x="93" y="26" width="9" height="7" rx="1" fill="#333"/>
+          <text x="97" y="32" fill="#aaa" font-size="4" text-anchor="middle">.ts</text>
+          <path d="M93 33 Q80 43 78 50" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
+          <rect x="6" y="70" width="11" height="7" rx="1" fill="#333"/>
+          <text x="11" y="76" fill="#aaa" font-size="3.5" text-anchor="middle">.css</text>
+          <path d="M17 74 Q28 68 30 62" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
+          <text x="55" y="108" fill="#555" font-size="5" font-family="monospace" text-anchor="middle">для hello world</text>
+        </svg>
+      </div>
+      <div class="mtitle y">node_modules</div>
+      <div class="mdesc">174 819 файлов.<br/>3.2 гигабайта.<br/>для hello world.</div>
+    </div>
+
+    <!-- 4. Резиновая утка -->
+    <div class="mcard hb">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="52" cy="74" rx="30" ry="22" fill="#ffe600" stroke="#cc9900" stroke-width="2"/>
+          <circle cx="68" cy="52" r="18" fill="#ffe600" stroke="#cc9900" stroke-width="2"/>
+          <circle cx="75" cy="47" r="4" fill="white"/>
+          <circle cx="76.5" cy="47" r="2" fill="#111"/>
+          <circle cx="77.5" cy="46" r=".8" fill="white"/>
+          <path d="M84 53 L96 55 L84 58 Z" fill="#ff8c00" stroke="#cc5500" stroke-width="1"/>
+          <path d="M28 70 Q38 60 48 67" stroke="#cc9900" stroke-width="2" fill="none"/>
+          <!-- шапка -->
+          <rect x="58" y="30" width="20" height="5" fill="#111" rx="1"/>
+          <line x1="68" y1="30" x2="68" y2="24" stroke="#111" stroke-width="2"/>
+          <polygon points="68,17 79,23 68,29 57,23" fill="#111"/>
+          <line x1="79" y1="23" x2="82" y2="30" stroke="#111" stroke-width="1.5"/>
+          <circle cx="82" cy="31" r="2.5" fill="#ffe600"/>
+          <!-- пузырь -->
+          <rect x="4" y="8" width="56" height="30" rx="4" fill="#080808" stroke="#00d4ff" stroke-width="1.5"/>
+          <polygon points="28,38 34,46 40,38" fill="#080808" stroke="#00d4ff" stroke-width="1.5"/>
+          <line x1="28" y1="38" x2="40" y2="38" stroke="#080808" stroke-width="2.5"/>
+          <text x="32" y="22" fill="#00d4ff" font-size="5.5" font-family="monospace" text-anchor="middle">а зачем ты</text>
+          <text x="32" y="30" fill="#00d4ff" font-size="5.5" font-family="monospace" text-anchor="middle">это делаешь?</text>
+        </svg>
+      </div>
+      <div class="mtitle b">Резиновая утка</div>
+      <div class="mdesc">лучший дебаггер.<br/>молчит, но осуждает.<br/>знает всё.</div>
+    </div>
+
+    <!-- 5. git push force -->
+    <div class="mcard hr">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="4" width="98" height="18" rx="2" fill="#1a0000" stroke="#ff2d55" stroke-width="1.5"/>
+          <text x="55" y="16" fill="#ff2d55" font-size="7.5" font-family="monospace" text-anchor="middle">git push --force</text>
+          <ellipse cx="55" cy="60" rx="27" ry="25" fill="#0a0000" stroke="#ff2d55" stroke-width="2"/>
+          <rect x="38" y="76" width="34" height="14" rx="2" fill="#0a0000" stroke="#ff2d55" stroke-width="2"/>
+          <rect x="41" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
+          <rect x="52" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
+          <rect x="63" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
+          <ellipse cx="44" cy="57" rx="8" ry="9" fill="#050000" stroke="#ff2d55" stroke-width="1.5"/>
+          <ellipse cx="66" cy="57" rx="8" ry="9" fill="#050000" stroke="#ff2d55" stroke-width="1.5"/>
+          <ellipse cx="44" cy="57" rx="4" ry="5" fill="#ff2d55" opacity=".5"/>
+          <ellipse cx="66" cy="57" rx="4" ry="5" fill="#ff2d55" opacity=".5"/>
+          <path d="M52 70 L55 74 L58 70" stroke="#ff2d55" stroke-width="1.5" fill="none"/>
+          <path d="M29 40 L36 51 L29 60" stroke="#ff2d55" stroke-width="1" opacity=".4"/>
+          <path d="M81 43 L74 54 L81 63" stroke="#ff2d55" stroke-width="1" opacity=".4"/>
+          <text x="55" y="104" fill="#555" font-size="5.5" font-family="monospace" text-anchor="middle">история? не слышал</text>
+        </svg>
+      </div>
+      <div class="mtitle r">git push --force</div>
+      <div class="mdesc">история коммитов?<br/>не слышал.<br/>коллеги? спят.</div>
+    </div>
+
+    <!-- 6. Пятница деплой -->
+    <div class="mcard hy">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="2" width="110" height="16" fill="#1a0000"/>
+          <text x="55" y="13" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">ДЕПЛОЙ В ПЯТНИЦУ</text>
+          <rect x="22" y="38" width="66" height="62" fill="#0a0a0a" stroke="#444" stroke-width="1.5"/>
+          <line x1="22" y1="58" x2="88" y2="58" stroke="#333"/>
+          <line x1="22" y1="78" x2="88" y2="78" stroke="#333"/>
+          <rect x="30" y="44" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
+          <rect x="49" y="44" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
+          <rect x="68" y="44" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
+          <rect x="30" y="64" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
+          <rect x="49" y="64" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
+          <rect x="68" y="64" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
+          <rect x="44" y="83" width="22" height="17" rx="1" fill="#161616" stroke="#555"/>
+          <!-- огонь -->
+          <path d="M62 58 Q56 46 64 36 Q60 48 73 40 Q67 52 74 47 Q70 58 62 58Z" fill="#ff8c00" opacity=".95"/>
+          <path d="M67 60 Q62 49 69 41 Q66 53 75 46 Q72 57 67 60Z" fill="#ffe600" opacity=".85"/>
+          <path d="M28 78 Q26 67 34 60 Q31 70 38 65 Q35 75 28 78Z" fill="#ff8c00" opacity=".7"/>
+          <!-- дым -->
+          <ellipse cx="66" cy="32" rx="5" ry="7" fill="#222" opacity=".65"/>
+          <ellipse cx="72" cy="25" rx="4" ry="6" fill="#222" opacity=".45"/>
+          <ellipse cx="78" cy="18" rx="3" ry="5" fill="#222" opacity=".3"/>
+          <!-- флаг -->
+          <line x1="55" y1="38" x2="55" y2="22" stroke="#888" stroke-width="1.5"/>
+          <path d="M55 22 L70 27 L55 32Z" fill="#00ff41"/>
+          <text x="62" y="29" fill="#000" font-size="4" font-family="monospace">live</text>
+        </svg>
+      </div>
+      <div class="mtitle y">пятница 17:58</div>
+      <div class="mdesc">«маленькое изменение»<br/>суббота 4:00 утра:<br/>горит Иса</div>
+    </div>
+
+    <!-- 7. Stack Overflow капельница -->
+    <div class="mcard hg">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="55" y1="8" x2="55" y2="92" stroke="#555" stroke-width="2.5"/>
+          <line x1="34" y1="10" x2="76" y2="10" stroke="#555" stroke-width="2.5"/>
+          <rect x="32" y="12" width="46" height="42" rx="4" fill="#0a0500" stroke="#ff8c00" stroke-width="2"/>
+          <rect x="32" y="12" width="46" height="15" rx="4" fill="#150a00"/>
+          <text x="55" y="22" fill="#ff8c00" font-size="6" font-family="monospace" text-anchor="middle">Stack</text>
+          <text x="55" y="29" fill="#ff8c00" font-size="6" font-family="monospace" text-anchor="middle">Overflow</text>
+          <rect x="34" y="29" width="42" height="23" fill="#ff8c00" opacity=".12"/>
+          <text x="55" y="39" fill="#ff8c00" font-size="5.5" font-family="monospace" text-anchor="middle">ctrl+c</text>
+          <text x="55" y="47" fill="#ff8c00" font-size="5.5" font-family="monospace" text-anchor="middle">ctrl+v</text>
+          <path d="M55 54 Q55 72 44 76 Q37 79 37 88" stroke="#777" stroke-width="2" fill="none"/>
+          <rect x="27" y="85" width="30" height="15" rx="5" fill="#1a1005" stroke="#555" stroke-width="1"/>
+          <line x1="35" y1="91" x2="27" y2="91" stroke="#aaa" stroke-width="1.5"/>
+          <path d="M27 91 L20 89 L22 93Z" fill="#aaa"/>
+          <text x="55" y="108" fill="#00ff41" font-size="5.5" font-family="monospace" text-anchor="middle">пульс: стабильно</text>
+        </svg>
+      </div>
+      <div class="mtitle g">Жизненно важно</div>
+      <div class="mdesc">без stackoverflow<br/>разработка невозможна.<br/>медицинский факт.</div>
+    </div>
+
+    <!-- 8. Сертификат работает на моей машине -->
+    <div class="mcard hg">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="10" width="98" height="90" rx="3" fill="#060900" stroke="#ffe600" stroke-width="2"/>
+          <rect x="10" y="14" width="90" height="82" rx="2" fill="none" stroke="#ffe600" stroke-width="1" stroke-dasharray="3,3" opacity=".4"/>
+          <text x="55" y="30" fill="#ffe600" font-size="6.5" font-family="monospace" text-anchor="middle">СЕРТИФИКАТ</text>
+          <line x1="14" y1="34" x2="96" y2="34" stroke="#ffe600" stroke-width="1" opacity=".3"/>
+          <text x="55" y="52" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">РАБОТАЕТ</text>
+          <text x="55" y="62" fill="#ff2d55" font-size="6" font-family="monospace" text-anchor="middle">НА МОЕЙ</text>
+          <text x="55" y="72" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">МОШИНЕ™</text>
+          <circle cx="55" cy="59" r="26" fill="none" stroke="#00ff41" stroke-width="2" opacity=".15"/>
+          <path d="M18" y="86" fill="#ffe600"/>
+          <polygon points="18,84 23,80 28,84 23,88" fill="#ffe600" opacity=".8"/>
+          <polygon points="82,84 87,80 92,84 87,88" fill="#ffe600" opacity=".8"/>
+          <line x1="30" y1="84" x2="80" y2="84" stroke="#333"/>
+          <text x="55" y="95" fill="#444" font-size="4.5" font-family="monospace" text-anchor="middle">подпись: я сам. дата: всегда</text>
+        </svg>
+      </div>
+      <div class="mtitle g">Официальный сертификат</div>
+      <div class="mdesc">ваша проблема —<br/>это ваша проблема.<br/>у меня Иса работает.</div>
+    </div>
+
+    <!-- 9. TODO-лист -->
+    <div class="mcard hb">
+      <div class="msvg">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="16" y="8" width="78" height="94" rx="3" fill="#080a0f" stroke="#00d4ff" stroke-width="2"/>
+          <rect x="16" y="8" width="13" height="94" rx="3" fill="#04101a" stroke="#00d4ff" stroke-width="2"/>
+          <circle cx="22" cy="26" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
+          <circle cx="22" cy="42" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
+          <circle cx="22" cy="58" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
+          <circle cx="22" cy="74" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
+          <rect x="36" y="22" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
+          <text x="48" y="29" fill="#444" font-size="6" font-family="monospace">рефакторинг</text>
+          <rect x="36" y="38" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
+          <text x="48" y="45" fill="#444" font-size="6" font-family="monospace">написать тесты</text>
+          <rect x="36" y="54" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
+          <text x="48" y="61" fill="#444" font-size="6" font-family="monospace">документация</text>
+          <rect x="36" y="70" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
+          <text x="48" y="77" fill="#444" font-size="5.5" font-family="monospace">удалить console.log</text>
+          <line x1="28" y1="16" x2="88" y2="92" stroke="#ff2d55" stroke-width="3.5" stroke-linecap="round" opacity=".75"/>
+          <line x1="88" y1="16" x2="28" y2="92" stroke="#ff2d55" stroke-width="3.5" stroke-linecap="round" opacity=".75"/>
+          <rect x="26" y="95" width="58" height="12" rx="2" fill="#0a0000"/>
+          <text x="55" y="104" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">// никогда</text>
+        </svg>
+      </div>
+      <div class="mtitle b">TODO-лист</div>
+      <div class="mdesc">2026 год.<br/>задача: сделать qr.<br/>статус: скоро.</div>
+    </div>
+
+  </div>
+</section>
+<hr class="divider"/>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <h2>// мои <em>проекты</em> (настоящие (думаю что))</h2>
+  <div class="plist">
+    <div class="pcard">
+      <svg class="psvg" viewBox="0 0 64 64" fill="none">
+        <rect x="4" y="8" width="56" height="48" rx="3" fill="#0a0a0a" stroke="#ffe600" stroke-width="1.5"/>
+        <circle cx="12" cy="14" r="2.5" fill="#ff2d55"/> <circle cx="20" cy="14" r="2.5" fill="#ffe600"/> <circle cx="28" cy="14" r="2.5" fill="#00ff41"/>
+        <line x1="4" y1="20" x2="60" y2="20" stroke="#1f1f1f"/>
+        <text x="32" y="44" fill="#ffe600" font-size="24" text-anchor="middle" font-family="monospace">47</text>
+        <text x="32" y="52" fill="#444" font-size="5.5" font-family="monospace" text-anchor="middle">TODO.app</text>
+      </svg>
+      <div>
+        <div class="ptitle">todo-app-v47-FINAL-real-final-v2</div>
+        <div class="pdesc">ещё один todo-app. отличается тёмной темой и тем, что я его действительно закончил. задеплоил в прод. уронил прод. поднял прод. задеплоил снова.</div>
+      </div>
+    </div>
+    <div class="pcard">
+      <svg class="psvg" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="26" fill="#04101a" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle cx="22" cy="27" r="5" fill="#020d14" stroke="#00d4ff" stroke-width="1"/> <circle cx="23" cy="27" r="2" fill="#00d4ff"/>
+        <circle cx="42" cy="27" r="5" fill="#020d14" stroke="#00d4ff" stroke-width="1"/> <circle cx="43" cy="27" r="2" fill="#00d4ff"/>
+        <path d="M20 38 Q32 44 44 38" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
+        <text x="32" y="22" fill="#00d4ff" font-size="7" font-family="monospace" text-anchor="middle">AI</text>
+        <path d="M24 12 Q28 6 32 12" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
+        <path d="M40 12 Q36 6 32 12" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div>
+        <div class="ptitle">claude-обёртка-для-claude-обёртки</div>
+        <div class="pdesc">обёртка над claude, которая внутри вызывает другую обёртку. где-то в рекурсии оно стало сознательным. боюсь обновлять зависимости.</div>
+      </div>
+    </div>
+    <div class="pcard">
+      <svg class="psvg" viewBox="0 0 64 64" fill="none">
+        <polygon points="32,4 60,18 60,46 32,60 4,46 4,18" fill="#03100a" stroke="#00ff41" stroke-width="1.5"/>
+        <text x="32" y="27" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">BLOCK</text>
+        <text x="32" y="36" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">CHAIN</text>
+        <text x="32" y="47" fill="#ff2d55" font-size="5" font-family="monospace" text-anchor="middle">gas: $47</text>
+      </svg>
+      <div>
+        <div class="ptitle">блокчейн-для-списка-покупок</div>
+        <div class="pdesc">децентрализованный, неизменяемый трекер продуктов. стоимость сайта: 200₸. стоимость гориллы: 600₸.</div>
+      </div>
+    </div>
+    <div class="pcard">
+      <svg class="psvg" viewBox="0 0 64 64" fill="none">
+        <rect x="6" y="6" width="52" height="52" rx="3" fill="#0a0a0a" stroke="#ff2d55" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="3" fill="#ff2d55" opacity=".6"/>
+        <circle cx="52" cy="12" r="3" fill="#ffe600" opacity=".6"/>
+        <text x="32" y="35" fill="#ff2d55" font-size="16" font-family="monospace" text-anchor="middle">&lt;/&gt;</text>
+        <text x="32" y="50" fill="#444" font-size="5" font-family="monospace" text-anchor="middle">этот сайт</text>
+      </svg>
+      <div>
+        <div class="ptitle">этот сайт</div>
+        <div class="pdesc">начинался как баннер. превратился в воздух. содержит конами-код (↑↑↓↓←→←→BA), 9 svg и Иса кризис.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="divider"/>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2>// <em>связаться</em> (с Исламбеком)</h2>
+  <div class="cbox">
+    <p>отвечаю на steam быстрее чем на whatsapp.<br/>но медленнее чем своя задница.</p>
+    <div class="btns">
+      <a href="https://github.com" class="btn g" target="_blank">GitHub ↗</a>
+      <a href="mailto:dev@localhost" class="btn r">Email (404) ↗</a>
+      <a href="#hero" class="btn g">↑ Наверх</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  сделано с <span>болью</span> и console.log ·
+  без дизайнеров ·
+  <span>© 2026 — ∞</span> · попробуй ↑↑↓↓←→←→BA
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),dot=document.getElementById('curdot');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX-8+'px';cur.style.top=e.clientY-8+'px';
+  dot.style.left=e.clientX-2+'px';dot.style.top=e.clientY-2+'px';
+});
+document.addEventListener('mousedown',()=>cur.classList.add('big'));
+document.addEventListener('mouseup',()=>cur.classList.remove('big'));
+
+(function(){
+  const c=document.getElementById('mx'),x=c.getContext('2d');
+  const rsz=()=>{c.width=innerWidth;c.height=innerHeight;};
+  rsz();addEventListener('resize',rsz);
+  const ch='АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯABCDEF0123456789</>{};npm git';
+  let dr=Array.from({length:Math.floor(innerWidth/18)},()=>Math.random()*-60);
+  setInterval(()=>{
+    x.fillStyle='rgba(0,0,0,.05)';x.fillRect(0,0,c.width,c.height);
+    x.fillStyle='#00ff41';x.font='13px monospace';
+    dr.forEach((y,i)=>{
+      x.fillText(ch[Math.floor(Math.random()*ch.length)],i*18,y*18);
+      if(y*18>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;
+    });
+  },55);
+})();
+
+const obs=new IntersectionObserver(en=>{
+  en.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.sfill').forEach(b=>b.style.width=b.dataset.w+'%');});
+},{threshold:.3});
+document.querySelectorAll('#skills').forEach(s=>obs.observe(s));
+
+const msgs=[
+  'попробуй: ↑↑↓↓←→←→BA',
+  'nigger is not a function',
+  'console.log был здесь',
+  'git gay → это ты',
+  'работает — не трогай',
+  '// todo: разобраться (2005)',
+  'npm install Елнур — not found',
+  'position: absolute; проблема: уник',
+  'это фича, не баг',
+  'инпут лаг — традиция',
+];
+let ti=0;
+const tel=document.getElementById('toast');
+const showT=m=>{tel.textContent=m;tel.classList.add('on');setTimeout(()=>tel.classList.remove('on'),3600);};
+setInterval(()=>showT(msgs[ti++%msgs.length]),9000);
+setTimeout(()=>showT(msgs[0]),2800);
+
+document.querySelectorAll('.badge').forEach(b=>{
+  const q=['сертифицировано ✓','это фича','as designed','не баг','работает у меня','сон!'];
+  b.addEventListener('click',()=>showT(q[Math.floor(Math.random()*q.length)]));
+});
+
+const kseq=[38,38,40,40,37,39,37,39,66,65];let ki=0;
+document.addEventListener('keydown',e=>{
+  if(e.keyCode===kseq[ki]){ki++;if(ki===kseq.length){document.getElementById('kona').classList.add('on');ki=0;}}
+  else ki=0;
+});
+</script>
+</body>
+</html>
