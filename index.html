@@ -1,633 +1,1616 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>разработчик.ру — 10x Инженер™</title>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=VT323&family=Unbounded:wght@900&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --g:#00ff41;--r:#ff2d55;--y:#ffe600;--b:#00d4ff;
-  --bg:#080808;--card:#0f0f0f;--border:#1f1f1f;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  background:var(--bg);color:var(--g);
-  font-family:'VT323',monospace;font-size:1.35rem;
-  cursor:none;overflow-x:hidden;
-}
-#cur{width:16px;height:16px;border:2px solid var(--g);position:fixed;pointer-events:none;
-  z-index:9999;transition:transform .08s,border-color .15s;mix-blend-mode:screen;rotate:45deg;}
-#cur.big{transform:scale(3);border-color:var(--y);}
-#curdot{width:4px;height:4px;background:var(--g);border-radius:50%;position:fixed;
-  pointer-events:none;z-index:9999;margin:-2px;}
-body::after{content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.025) 2px,rgba(0,255,65,.025) 4px);
-  pointer-events:none;z-index:9997;}
-#mx{position:fixed;inset:0;opacity:.06;pointer-events:none;z-index:0;}
-nav{position:fixed;top:0;width:100%;z-index:200;display:flex;justify-content:center;
-  flex-wrap:wrap;gap:.3rem;padding:.65rem 1rem;
-  background:rgba(8,8,8,.9);backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--border);}
-nav a{font-family:'Russo One',sans-serif;font-size:.7rem;color:#3a3a3a;
-  text-decoration:none;padding:.3rem .65rem;letter-spacing:.08em;
-  transition:color .2s,text-shadow .2s;}
-nav a:hover{color:var(--g);text-shadow:0 0 12px var(--g);}
-#hero{position:relative;z-index:1;min-height:100vh;display:flex;
-  flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:5rem 1.5rem 3rem;gap:1.8rem;}
-.big-title{
-  font-family:'Unbounded',sans-serif;
-  font-size:clamp(2.4rem,10vw,7rem);
-  font-weight:900;line-height:.9;
-  color:var(--g);
-  text-shadow:0 0 20px var(--g),0 0 60px rgba(0,255,65,.4);
-  position:relative;
-}
-.big-title::before{content:attr(data-t);position:absolute;inset:0;
-  color:var(--r);opacity:.7;animation:gt 3s infinite;
-  clip-path:polygon(0 0,100% 0,100% 40%,0 40%);}
-.big-title::after{content:attr(data-t);position:absolute;inset:0;
-  color:var(--b);opacity:.7;animation:gb 2.5s infinite;
-  clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);}
-@keyframes gt{0%,89%,100%{transform:none}90%{transform:translate(-5px,-2px)}94%{transform:translate(5px,1px)}}
-@keyframes gb{0%,85%,100%{transform:none}87%{transform:translate(5px,3px)}91%{transform:translate(-3px,-1px)}}
-.hero-sub{font-family:'Russo One',sans-serif;font-size:clamp(.55rem,1.8vw,.9rem);
-  color:#3a3a3a;letter-spacing:.2em;animation:fi 1s .4s both;}
-.badges{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;animation:fi 1s .7s both;}
-.badge{padding:.35rem .9rem;border:1px solid;font-size:1.05rem;
-  transition:transform .2s,background .2s;cursor:none;}
-.badge.g{border-color:var(--g);color:var(--g);background:rgba(0,255,65,.05);}
-.badge.r{border-color:var(--r);color:var(--r);background:rgba(255,45,85,.05);}
-.badge.y{border-color:var(--y);color:var(--y);background:rgba(255,230,0,.05);}
-.badge.b{border-color:var(--b);color:var(--b);background:rgba(0,212,255,.05);}
-.badge:hover{transform:translateY(-4px) rotate(-1deg);}
-.term{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--g);
-  padding:1.4rem 1.6rem;text-align:left;max-width:640px;width:100%;
-  font-size:1.2rem;line-height:1.9;animation:fi 1s 1s both;position:relative;}
-.term::before{content:'● ● ●';position:absolute;top:.5rem;left:.8rem;
-  font-size:.7rem;color:#2a2a2a;letter-spacing:.5rem;}
-.tp{color:#444;} .tc{color:var(--y);} .to{color:#777;} .te{color:var(--r);}
-.blink{animation:bl 1s step-end infinite;}
-@keyframes bl{50%{opacity:0;}}
-.down-hint{font-family:'Russo One',sans-serif;font-size:.5rem;color:#2a2a2a;
-  letter-spacing:.25em;animation:fi 1s 2.2s both,bob 2s 3s ease-in-out infinite;}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-@keyframes fi{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-section{position:relative;z-index:1;padding:5rem 1.5rem;max-width:960px;margin:0 auto;}
-h2{font-family:'Unbounded',sans-serif;font-size:clamp(.75rem,2.5vw,1.1rem);
-  color:var(--y);border-bottom:1px solid var(--border);padding-bottom:1rem;
-  margin-bottom:3rem;letter-spacing:.05em;
-  text-shadow:0 0 20px rgba(255,230,0,.3);}
-h2 em{color:var(--r);font-style:normal;}
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;}
-.mcard{background:var(--card);border:1px solid var(--border);padding:1.8rem 1.4rem;
-  text-align:center;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;}
-.mcard::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,.015));}
-.mcard:hover{transform:translateY(-6px);}
-.mcard.hg:hover{border-color:var(--g);}
-.mcard.hr:hover{border-color:var(--r);}
-.mcard.hy:hover{border-color:var(--y);}
-.mcard.hb:hover{border-color:var(--b);}
-.msvg{width:110px;height:110px;margin:0 auto 1.2rem;}
-.mtitle{font-family:'Russo One',sans-serif;font-size:.75rem;margin-bottom:.6rem;letter-spacing:.05em;}
-.mtitle.g{color:var(--g);} .mtitle.r{color:var(--r);} .mtitle.y{color:var(--y);} .mtitle.b{color:var(--b);}
-.mdesc{font-size:1.05rem;color:#555;line-height:1.65;}
-.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem;}
-.scard{background:var(--card);border:1px solid var(--border);padding:1.3rem;
-  transition:border-color .2s,transform .2s;}
-.scard:hover{transform:translateY(-3px);}
-.sname{font-family:'Russo One',sans-serif;font-size:.65rem;margin-bottom:.6rem;color:var(--g);}
-.sbar{background:#181818;height:7px;overflow:hidden;margin-bottom:.4rem;}
-.sfill{height:100%;width:0;transition:width 1.6s cubic-bezier(.25,1,.5,1);}
-.sfill.g{background:linear-gradient(90deg,var(--g),#69ffad);}
-.sfill.r{background:linear-gradient(90deg,var(--r),#ff7b96);}
-.sfill.y{background:linear-gradient(90deg,var(--y),#fff09e);}
-.sfill.b{background:linear-gradient(90deg,var(--b),#a0f4ff);}
-.ssub{font-size:1rem;color:#3a3a3a;}
-.plist{display:flex;flex-direction:column;gap:1.2rem;}
-.pcard{background:var(--card);border:1px solid var(--border);
-  padding:1.4rem 1.6rem;display:flex;gap:1.4rem;align-items:flex-start;
-  transition:border-color .2s,transform .2s;}
-.pcard:hover{border-color:var(--r);transform:translateX(8px);}
-.psvg{width:64px;height:64px;flex-shrink:0;}
-.ptitle{font-family:'Russo One',sans-serif;font-size:.7rem;color:var(--y);margin-bottom:.5rem;letter-spacing:.03em;}
-.pdesc{color:#555;font-size:1.1rem;line-height:1.6;}
-.cbox{background:var(--card);border:1px solid var(--border);padding:2.5rem;text-align:center;}
-.cbox p{color:#444;margin-bottom:2rem;font-size:1.25rem;line-height:1.7;}
-.btns{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
-.btn{font-family:'Russo One',sans-serif;font-size:.6rem;padding:.8rem 1.6rem;
-  border:2px solid;text-decoration:none;display:inline-block;
-  transition:background .2s,color .2s,transform .2s;cursor:none;letter-spacing:.05em;}
-.btn.g{border-color:var(--g);color:var(--g);}
-.btn.g:hover{background:var(--g);color:#000;transform:translateY(-3px);}
-.btn.r{border-color:var(--r);color:var(--r);}
-.btn.r:hover{background:var(--r);color:#fff;transform:translateY(-3px);}
-footer{position:relative;z-index:1;text-align:center;padding:2rem;
-  border-top:1px solid var(--border);font-size:1rem;color:#2a2a2a;}
-footer span{color:var(--r);}
-.divider{border:none;border-top:1px solid var(--border);margin:0;}
-#toast{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--card);
-  border:1px solid var(--y);color:var(--y);
-  font-family:'Russo One',sans-serif;font-size:.55rem;
-  padding:1rem 1.3rem;z-index:9000;opacity:0;transform:translateY(16px);
-  transition:opacity .4s,transform .4s;max-width:260px;line-height:1.9;
-  pointer-events:none;letter-spacing:.05em;}
-#toast.on{opacity:1;transform:none;}
-#kona{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9990;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:2rem;}
-#kona.on{display:flex;}
-#kona h1{font-family:'Unbounded',sans-serif;font-size:clamp(1rem,4vw,2rem);
-  color:var(--y);text-shadow:0 0 40px var(--y);animation:bl .8s infinite;}
-#kona p{font-size:1.3rem;color:#555;}
-#kona button{font-family:'Russo One',sans-serif;font-size:.6rem;
-  padding:.8rem 2rem;border:2px solid var(--r);color:var(--r);
-  background:transparent;cursor:none;letter-spacing:.08em;
-  transition:background .2s,color .2s;}
-#kona button:hover{background:var(--r);color:#fff;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Менің Мамандығым — Ақпараттық Жүйелер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── ROOT & RESET ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #FFFFFF;
+      --ink:   #09090F;
+      --navy:  #0B1D3A;
+      --blue:  #1D5BFF;
+      --cyan:  #00C8E0;
+      --coral: #FF4D38;
+      --gold:  #FFB30F;
+      --teal:  #0ABFA3;
+      --lavender: #8B5CF6;
+      --bg:    #FAFBFF;
+      --muted: #6B7280;
+      --border: rgba(29,91,255,.12);
+      --fs-hero: clamp(3.2rem, 8vw, 7.5rem);
+      --fs-h2:   clamp(2rem, 4vw, 3.4rem);
+      --fs-h3:   clamp(1.3rem, 2vw, 1.8rem);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CUSTOM CURSOR ──────────────────────────────────────────── */
+    #cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform .1s;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--blue);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all .18s ease;
+      opacity: .6;
+    }
+
+    /* ─── NOISE TEXTURE ──────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1; opacity: .4;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 900;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 5vw;
+      background: rgba(250,251,255,.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow .3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 40px rgba(29,91,255,.08); }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .95rem; font-weight: 500;
+      color: var(--blue);
+      letter-spacing: -.02em;
+    }
+    .nav-logo span { color: var(--coral); }
+
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a {
+      font-size: .82rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: var(--ink); text-decoration: none;
+      position: relative;
+      transition: color .2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: var(--blue);
+      transition: width .3s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ─── HERO ───────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 5vw;
+      padding-top: 80px;
+      gap: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gradient orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(29,91,255,.15) 0%, transparent 70%);
+      top: -100px; right: -60px;
+      animation: drift1 12s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(0,200,224,.12) 0%, transparent 70%);
+      bottom: 20px; left: 5%;
+      animation: drift2 14s ease-in-out infinite alternate;
+    }
+    .orb-3 {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(255,77,56,.1) 0%, transparent 70%);
+      top: 40%; right: 30%;
+      animation: drift1 10s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes drift1 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(40px,30px) scale(1.08); }
+    }
+    @keyframes drift2 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(-30px,40px) scale(1.05); }
+    }
+
+    .hero-left { position: relative; z-index: 2; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(29,91,255,.08);
+      border: 1px solid rgba(29,91,255,.2);
+      border-radius: 100px;
+      padding: .4rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem; font-weight: 400;
+      color: var(--blue);
+      margin-bottom: 1.8rem;
+      animation: fadeUp .8s ease both;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.6); opacity: .5; }
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: var(--fs-hero);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -.03em;
+      animation: fadeUp .8s .1s ease both;
+    }
+    .hero-title .line-blue  { color: var(--blue); }
+    .hero-title .line-coral {
+      color: var(--coral);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      margin-top: 1.6rem;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.7;
+      animation: fadeUp .8s .2s ease both;
+    }
+
+    .hero-cta {
+      margin-top: 2.4rem;
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      padding: .85rem 2rem;
+      border-radius: 100px;
+      font-size: .88rem; font-weight: 700;
+      text-decoration: none; letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 8px 30px rgba(29,91,255,.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(29,91,255,.45);
+    }
+    .btn-outline {
+      border: 1.5px solid rgba(29,91,255,.3);
+      color: var(--blue);
+      padding: .85rem 2rem;
+      border-radius: 100px;
+      font-size: .88rem; font-weight: 700;
+      text-decoration: none; letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-outline:hover {
+      background: rgba(29,91,255,.06);
+      border-color: var(--blue);
+    }
+
+    .hero-stats {
+      margin-top: 3rem;
+      display: flex; gap: 2.5rem;
+      animation: fadeUp .8s .4s ease both;
+    }
+    .stat-item { }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 700;
+      color: var(--blue); line-height: 1;
+    }
+    .stat-label {
+      font-size: .72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--muted); margin-top: .2rem;
+    }
+
+    /* Hero Right - SVG Illustration */
+    .hero-right {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+      animation: fadeIn 1s .3s ease both;
+    }
+
+    .hero-svg-wrap {
+      width: min(480px, 48vw);
+      position: relative;
+    }
+
+    /* Floating code card */
+    .float-card {
+      position: absolute;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: .9rem 1.2rem;
+      box-shadow: 0 20px 60px rgba(9,9,15,.1);
+      animation: float 6s ease-in-out infinite;
+    }
+    .float-card.card-1 {
+      bottom: -20px; left: -40px;
+      animation-delay: 0s;
+    }
+    .float-card.card-2 {
+      top: -20px; right: -30px;
+      animation-delay: 2s;
+    }
+    .float-card.card-3 {
+      top: 40%; left: -50px;
+      animation-delay: 4s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-14px); }
+    }
+    .card-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; color: var(--muted);
+    }
+    .card-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .9rem; font-weight: 500;
+      color: var(--blue); margin-top: .2rem;
+    }
+    .card-val .g { color: var(--teal); }
+    .card-val .r { color: var(--coral); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .6rem;
+      font-size: .7rem; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--muted);
+      animation: fadeUp 1s .8s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--blue), transparent);
+      animation: scrollDown 2s ease infinite;
+    }
+    @keyframes scrollDown {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ─── SECTION WRAPPER ────────────────────────────────────────── */
+    section { position: relative; }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 5vw;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; font-weight: 400;
+      text-transform: uppercase; letter-spacing: .18em;
+      color: var(--blue); margin-bottom: .8rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: var(--fs-h2);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -.025em;
+    }
+
+    .section-desc {
+      font-size: 1rem; font-weight: 400;
+      color: var(--muted); line-height: 1.75;
+      max-width: 580px; margin-top: 1rem;
+    }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: none;
+    }
+
+    /* ─── ABOUT SECTION ──────────────────────────────────────────── */
+    #about {
+      padding: 10rem 0 8rem;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 5rem;
+      align-items: center;
+      margin-top: 4rem;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-main-card {
+      background: linear-gradient(135deg, var(--blue) 0%, #0A3CCC 100%);
+      border-radius: 24px;
+      padding: 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-main-card::before {
+      content: '';
+      position: absolute; top: -40%; right: -20%;
+      width: 280px; height: 280px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50%;
+    }
+    .about-card-icon { margin-bottom: 1.2rem; }
+    .about-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 700;
+      line-height: 1.2;
+    }
+    .about-card-text {
+      font-size: .88rem; opacity: .8;
+      line-height: 1.7; margin-top: .8rem;
+    }
+    .about-mini-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin-top: 1rem;
+    }
+    .mini-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.2rem;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .mini-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(29,91,255,.12);
+    }
+    .mini-card-icon { margin-bottom: .8rem; }
+    .mini-card-title {
+      font-size: .85rem; font-weight: 700; color: var(--ink);
+    }
+    .mini-card-text {
+      font-size: .75rem; color: var(--muted); margin-top: .3rem; line-height: 1.5;
+    }
+
+    .about-content h2 { margin-bottom: 1.5rem; }
+    .about-content p {
+      font-size: 1rem; line-height: 1.8;
+      color: #374151; margin-bottom: 1.2rem;
+    }
+    .about-content p strong { color: var(--blue); }
+
+    .about-tags {
+      display: flex; flex-wrap: wrap; gap: .6rem;
+      margin-top: 1.5rem;
+    }
+    .tag {
+      background: rgba(29,91,255,.07);
+      border: 1px solid rgba(29,91,255,.15);
+      color: var(--blue);
+      padding: .35rem .9rem;
+      border-radius: 100px;
+      font-size: .78rem; font-weight: 600;
+    }
+
+    /* ─── SKILLS SECTION ─────────────────────────────────────────── */
+    #skills { padding: 8rem 0; background: var(--white); }
+
+    .skills-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; flex-wrap: wrap; gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .skill-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,.1);
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 20px 20px 0 0;
+    }
+    .skill-card.c1::before { background: var(--blue); }
+    .skill-card.c2::before { background: var(--teal); }
+    .skill-card.c3::before { background: var(--coral); }
+    .skill-card.c4::before { background: var(--gold); }
+    .skill-card.c5::before { background: var(--lavender); }
+    .skill-card.c6::before { background: var(--cyan); }
+
+    .skill-icon { margin-bottom: 1.2rem; }
+    .skill-name {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--ink); margin-bottom: .6rem;
+    }
+    .skill-desc {
+      font-size: .83rem; color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .skill-bar-wrap {
+      margin-top: 1.4rem;
+    }
+    .skill-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: .72rem; font-weight: 600;
+      color: var(--muted); margin-bottom: .4rem;
+    }
+    .skill-bar-track {
+      height: 4px; background: rgba(0,0,0,.07);
+      border-radius: 4px; overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%; border-radius: 4px;
+      width: 0;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+    .c1 .skill-bar-fill { background: var(--blue); }
+    .c2 .skill-bar-fill { background: var(--teal); }
+    .c3 .skill-bar-fill { background: var(--coral); }
+    .c4 .skill-bar-fill { background: var(--gold); }
+    .c5 .skill-bar-fill { background: var(--lavender); }
+    .c6 .skill-bar-fill { background: var(--cyan); }
+
+    /* ─── CAREER PATH ────────────────────────────────────────────── */
+    #career { padding: 8rem 0; }
+
+    .timeline {
+      position: relative;
+      margin-top: 4rem;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--blue), var(--cyan), var(--teal));
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 3.5rem;
+      padding-left: 2.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -2rem;
+      top: .35rem;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2.5px solid var(--blue);
+      z-index: 1;
+      box-shadow: 0 0 0 4px rgba(29,91,255,.12);
+    }
+    .timeline-item.active::before {
+      background: var(--blue);
+      box-shadow: 0 0 0 6px rgba(29,91,255,.15);
+    }
+
+    .tl-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; font-weight: 400;
+      color: var(--blue); letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: .5rem;
+    }
+    .tl-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: .6rem;
+    }
+    .tl-desc {
+      font-size: .88rem; color: var(--muted);
+      line-height: 1.7; max-width: 520px;
+    }
+    .tl-badge {
+      display: inline-block;
+      background: rgba(10,191,163,.1);
+      border: 1px solid rgba(10,191,163,.25);
+      color: var(--teal);
+      padding: .25rem .75rem;
+      border-radius: 100px;
+      font-size: .7rem; font-weight: 600;
+      margin-bottom: .8rem;
+    }
+
+    /* ─── TECH STACK ─────────────────────────────────────────────── */
+    #tech { padding: 8rem 0; background: var(--white); }
+
+    .tech-marquee-wrap {
+      margin-top: 3rem;
+      overflow: hidden;
+      -webkit-mask: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+      mask: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    }
+    .tech-track {
+      display: flex; gap: 1.5rem;
+      animation: marquee 28s linear infinite;
+      width: max-content;
+    }
+    .tech-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .tech-item {
+      flex-shrink: 0;
+      background: var(--bg);
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 16px;
+      padding: 1.2rem 1.8rem;
+      display: flex; align-items: center; gap: .9rem;
+      font-weight: 600; font-size: .88rem;
+      white-space: nowrap;
+      transition: border-color .2s;
+    }
+    .tech-item:hover { border-color: var(--blue); }
+
+    /* ─── SALARY / PROSPECT SECTION ─────────────────────────────── */
+    #prospects { padding: 8rem 0; }
+
+    .prospects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+
+    .salary-card {
+      background: linear-gradient(135deg, #09090F 0%, #1a1a2e 100%);
+      border-radius: 28px;
+      padding: 3rem;
+      color: white;
+      position: relative; overflow: hidden;
+    }
+    .salary-card::after {
+      content: '';
+      position: absolute; bottom: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(29,91,255,.2);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    .salary-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; color: rgba(255,255,255,.5);
+      text-transform: uppercase; letter-spacing: .15em;
+      margin-bottom: .8rem;
+    }
+    .salary-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.8rem; font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,.7) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .salary-unit {
+      font-size: .88rem; opacity: .6; margin-top: .3rem;
+    }
+    .salary-divider {
+      height: 1px; background: rgba(255,255,255,.1);
+      margin: 1.8rem 0;
+    }
+    .salary-rows { display: flex; flex-direction: column; gap: .8rem; }
+    .salary-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .salary-row-label { font-size: .82rem; opacity: .7; }
+    .salary-row-val { font-weight: 700; font-size: .9rem; }
+
+    .prospect-list {
+      display: flex; flex-direction: column; gap: 1.2rem;
+    }
+    .prospect-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.4rem;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 16px;
+      background: var(--white);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .prospect-item:hover {
+      transform: translateX(6px);
+      box-shadow: 0 12px 40px rgba(29,91,255,.1);
+      border-color: rgba(29,91,255,.2);
+    }
+    .pi-icon { flex-shrink: 0; }
+    .pi-title {
+      font-size: .95rem; font-weight: 700; color: var(--ink);
+      margin-bottom: .3rem;
+    }
+    .pi-desc {
+      font-size: .8rem; color: var(--muted); line-height: 1.6;
+    }
+
+    /* ─── QUOTE / HIGHLIGHT BAND ─────────────────────────────────── */
+    #quote {
+      padding: 7rem 0;
+      background: linear-gradient(135deg, var(--blue) 0%, #0933BB 100%);
+      overflow: hidden;
+      position: relative;
+    }
+    #quote::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,.06); border-radius: 50%;
+    }
+    #quote::after {
+      content: '';
+      position: absolute; bottom: -100px; left: -60px;
+      width: 300px; height: 300px;
+      background: rgba(0,0,0,.1); border-radius: 50%;
+    }
+    .quote-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 5vw;
+      text-align: center; position: relative; z-index: 2;
+    }
+    .quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 8rem; line-height: .5;
+      color: rgba(255,255,255,.2);
+      display: block; margin-bottom: .5rem;
+    }
+    .quote-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      font-weight: 400; font-style: italic;
+      color: white; line-height: 1.45;
+    }
+    .quote-author {
+      margin-top: 1.8rem;
+      font-size: .8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .15em;
+      color: rgba(255,255,255,.6);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,.6);
+      padding: 4rem 5vw 2.5rem;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between;
+      align-items: flex-start; flex-wrap: wrap; gap: 2rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .footer-brand .nav-logo { color: var(--cyan); font-size: 1.1rem; }
+    .footer-brand p {
+      margin-top: .6rem; font-size: .82rem;
+      max-width: 280px; line-height: 1.6;
+    }
+    .footer-links h4 {
+      font-size: .72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .15em;
+      color: white; margin-bottom: 1rem;
+    }
+    .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+    .footer-links ul a {
+      color: rgba(255,255,255,.55); text-decoration: none;
+      font-size: .82rem; transition: color .2s;
+    }
+    .footer-links ul a:hover { color: var(--cyan); }
+    .footer-bottom {
+      max-width: 1200px; margin: 2rem auto 0;
+      display: flex; justify-content: space-between;
+      font-size: .75rem; flex-wrap: wrap; gap: .5rem;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 100px; }
+      .hero-right { display: none; }
+      .about-grid, .prospects-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .about-mini-cards { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 580px) {
+      .skills-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .about-mini-cards { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-<canvas id="mx"></canvas>
-<div id="cur"></div>
-<div id="curdot"></div>
-<div id="toast"></div>
-<div id="kona">
-  <h1>КОД АКТИВИРОВАН</h1>
-  <p style="color:var(--g);font-size:1.6rem;">ты официально 1000x разработчик</p>
-  <p>компилятор тебя уважает. кто то.</p>
-  <p style="font-size:.95rem;color:#333;">↑ ↑ ↓ ↓ ← → ← → B A</p>
-  <button onclick="document.getElementById('kona').classList.remove('on')">ПОНЯЛ, СПАСИБО</button>
-</div>
-<nav>
-  <a href="#hero">главная</a>
-  <a href="#skills">скиллы</a>
-  <a href="#memes">мемы</a>
-  <a href="#projects">проекты</a>
-  <a href="#contact">контакт</a>
-</nav>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="big-title" data-t="ДРУН.EXE">ДРУН.EXE</div>
-  <p class="hero-sub">// программист · stackoverflow-инженер · создатель багов с 2026 года</p>
-  <div class="badges">
-    <span class="badge g">✓ Работает на моей мошине™</span>
-    <span class="badge r">Спать</span>
-    <span class="badge y">Работает на энергосе</span>
-    <span class="badge b">Промпт-инженер</span>
-    <span class="badge g">git push --force</span>
-    <span class="badge r">npm install</span>
-    <span class="badge y">// TODO: переписать</span>
-  </div>
-  <div class="term">
-    <br/>
-    <span class="tp">user@prod:~$ </span><span class="tc">whoami</span><br/>
-    <span class="to">→ разработчик, который гуглит «как отцентрировать div» каждый раз</span><br/><br/>
-    <span class="tp">user@prod:~$ </span><span class="tc">git status</span><br/>
-    <span class="te">→ изменено 73 файла. коммит: «фикс». описание: пусто.</span><br/><br/>
-    <span class="tp">user@prod:~$ </span><span class="tc">npm start</span><br/>
-    <span class="te">→ ОШИБКА: не найден модуль './кокве'</span><br/><br/>
-    <span class="tp">user@prod:~$ </span><span class="tc">ls node_modules | wc -l</span><br/>
-    <span class="te">→ 174 819 &nbsp;&nbsp;// для hello world. всё нормально.</span><br/><br/>
-    <span class="tp">user@prod:~$ </span><span class="tc"><span class="blink">_</span></span>
-  </div>
-  <p class="down-hint">▼ СКРОЛЛЬ ВНИЗ ИЛИ ВСТРЕТЬ СУДЬБУ ▼</p>
-</section>
-<hr class="divider"/>
+  <!-- Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
 
-<!-- SKILLS -->
-<section id="skills">
-  <h2>// мои <em>навыки</em>.json</h2>
-  <div class="sgrid">
-    <div class="scard"><div class="sname">JavaScript</div><div class="sbar"><div class="sfill g" data-w="95"></div></div><div class="ssub">в основном вайб</div></div>
-    <div class="scard"><div class="sname">CSS</div><div class="sbar"><div class="sfill y" data-w="38"></div></div><div class="ssub">position: молиться</div></div>
-    <div class="scard"><div class="sname">Git</div><div class="sbar"><div class="sfill r" data-w="72"></div></div><div class="ssub">push --force каждый день</div></div>
-    <div class="scard"><div class="sname">Гуглинг</div><div class="sbar"><div class="sfill g" data-w="100"></div></div><div class="ssub">уровень: бог</div></div>
-    <div class="scard"><div class="sname">Копипаст</div><div class="sbar"><div class="sfill b" data-w="99"></div></div><div class="ssub">ctrl+c ctrl+v профи</div></div>
-    <div class="scard"><div class="sname">Docker</div><div class="sbar"><div class="sfill r" data-w="25"></div></div><div class="ssub">в контейнере работает</div></div>
-    <div class="scard"><div class="sname">Документация</div><div class="sbar"><div class="sfill y" data-w="8"></div></div><div class="ssub">// todo: написать потом</div></div>
-    <div class="scard"><div class="sname">Дебаггинг</div><div class="sbar"><div class="sfill g" data-w="60"></div></div><div class="ssub">console.log везде</div></div>
-  </div>
-</section>
-<hr class="divider"/>
+  <!-- ─── NAV ──────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <div class="nav-logo">АЖ<span>.</span>kz</div>
+    <ul class="nav-links">
+      <li><a href="#about">Туралы</a></li>
+      <li><a href="#skills">Дағдылар</a></li>
+      <li><a href="#career">Мансап</a></li>
+      <li><a href="#tech">Технологиялар</a></li>
+      <li><a href="#prospects">Болашақ</a></li>
+    </ul>
+  </nav>
 
-<!-- MEMES -->
-<section id="memes">
-  <h2>// музей <em>правды</em></h2>
-  <div class="mgrid">
+  <!-- ─── HERO ──────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-    <!-- 1. 03:47 -->
-    <div class="mcard hg">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><radialGradient id="scr1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00ff41" stop-opacity=".35"/><stop offset="100%" stop-color="#00ff41" stop-opacity="0"/></radialGradient></defs>
-          <rect x="15" y="28" width="80" height="54" rx="3" fill="#0a0a0a" stroke="#00ff41" stroke-width="2"/>
-          <rect x="21" y="34" width="68" height="40" fill="#001400"/>
-          <rect x="21" y="34" width="68" height="40" fill="url(#scr1)"/>
-          <line x1="27" y1="43" x2="62" y2="43" stroke="#00ff41" stroke-width="1.5" opacity=".8"/>
-          <line x1="27" y1="50" x2="74" y2="50" stroke="#ffe600" stroke-width="1.5" opacity=".8"/>
-          <line x1="27" y1="57" x2="46" y2="57" stroke="#ff2d55" stroke-width="2"/>
-          <line x1="27" y1="64" x2="66" y2="64" stroke="#00ff41" stroke-width="1.5" opacity=".4"/>
-          <text x="55" y="46" fill="#ff2d55" font-size="6" font-family="monospace" text-anchor="middle" opacity=".7">ERROR</text>
-          <rect x="47" y="82" width="16" height="6" fill="#161616" stroke="#2a2a2a"/>
-          <rect x="37" y="88" width="36" height="4" rx="1" fill="#161616" stroke="#2a2a2a"/>
-          <circle cx="55" cy="20" r="9" fill="#161616" stroke="#00ff41" stroke-width="1.5"/>
-          <line x1="50" y1="19" x2="53" y2="19" stroke="#00ff41" stroke-width="1.5"/>
-          <line x1="57" y1="19" x2="60" y2="19" stroke="#00ff41" stroke-width="1.5"/>
-          <path d="M49 22 Q51.5 24.5 54 22" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
-          <path d="M56 22 Q58.5 24.5 61 22" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
-          <ellipse cx="49" cy="24" rx="1" ry="2" fill="#00d4ff" opacity=".9"/>
-          <rect x="79" y="75" width="12" height="11" rx="1" fill="#161616" stroke="#ffe600" stroke-width="1.5"/>
-          <path d="M91 78 Q96 78 96 83 Q96 87 91 87" stroke="#ffe600" stroke-width="1.5" fill="none"/>
-          <path d="M83 73 Q84 70 83 67" stroke="#ffe600" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-          <path d="M86 72 Q87 69 86 66" stroke="#ffe600" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-          <rect x="89" y="6" width="18" height="12" rx="2" fill="#0a0000" stroke="#ff2d55" stroke-width="1.2"/>
-          <text x="98" y="15" fill="#ff2d55" font-size="5.5" font-family="monospace" text-anchor="middle">3:47</text>
-        </svg>
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Ақпараттық жүйелер мамандығы
       </div>
-      <div class="mtitle g">03:47 ночи</div>
-      <div class="mdesc">какая строчка<br/>— говорил я час назад</div>
+
+      <h1 class="hero-title">
+        Менің<br>
+        <span class="line-blue">Мамандығым</span><br>
+        <span class="line-coral">— АЖ</span>
+      </h1>
+
+      <p class="hero-sub">
+        Ақпараттық жүйелер — цифрлық болашақтың негізі.
+        Деректер, технология және инновацияның тоғысқан жері.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#about" class="btn-primary">Танысу</a>
+        <a href="#career" class="btn-outline">Мансап жолы</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">10+</div>
+          <div class="stat-label">Жыл сұранысты</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">₸850K</div>
+          <div class="stat-label">Орташа жалақы</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">95%</div>
+          <div class="stat-label">Жұмыспен қамту</div>
+        </div>
+      </div>
     </div>
 
-    <!-- 2. Баг или фича -->
-    <div class="mcard hr">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="55" y1="12" x2="55" y2="52" stroke="#ff2d55" stroke-width="2.5"/>
-          <circle cx="55" cy="11" r="5" fill="#ff2d55"/>
-          <line x1="18" y1="44" x2="92" y2="44" stroke="#ff2d55" stroke-width="2.5"/>
-          <!-- левая (баг — тяжелее, ниже) -->
-          <line x1="26" y1="44" x2="20" y2="66" stroke="#ff2d55" stroke-width="1.5"/>
-          <line x1="26" y1="44" x2="32" y2="66" stroke="#ff2d55" stroke-width="1.5"/>
-          <path d="M16 66 Q26 71 36 66" stroke="#ff2d55" stroke-width="2" fill="none"/>
-          <circle cx="26" cy="61" r="6" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
-          <circle cx="23" cy="59" r="1.5" fill="#ff2d55"/>
-          <circle cx="29" cy="59" r="1.5" fill="#ff2d55"/>
-          <path d="M23 64 Q26 66.5 29 64" stroke="#ff2d55" stroke-width="1.2" fill="none"/>
-          <line x1="22" y1="56" x2="18" y2="52" stroke="#ff2d55" stroke-width="1.2"/>
-          <line x1="30" y1="56" x2="34" y2="52" stroke="#ff2d55" stroke-width="1.2"/>
-          <text x="26" y="78" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">БАГ</text>
-          <!-- правая (фича — выше) -->
-          <line x1="84" y1="44" x2="78" y2="34" stroke="#00ff41" stroke-width="1.5"/>
-          <line x1="84" y1="44" x2="90" y2="34" stroke="#00ff41" stroke-width="1.5"/>
-          <path d="M74 34 Q84 29 94 34" stroke="#00ff41" stroke-width="2" fill="none"/>
-          <text x="84" y="33" fill="#00ff41" font-size="11" text-anchor="middle">✓</text>
-          <text x="84" y="46" fill="#00ff41" font-size="6.5" font-family="monospace" text-anchor="middle">ФИЧА</text>
-          <!-- стрелка бага вниз -->
-          <text x="26" y="92" fill="#ff2d55" font-size="9" text-anchor="middle">↓</text>
-          <text x="84" y="92" fill="#00ff41" font-size="9" text-anchor="middle">↑</text>
-          <text x="55" y="105" fill="#555" font-size="5.5" font-family="monospace" text-anchor="middle">всегда фича</text>
-        </svg>
-      </div>
-      <div class="mtitle r">БАГ или ФИЧА?</div>
-      <div class="mdesc">всегда фича.<br/>просто нестандартное<br/>поведение системы.</div>
-    </div>
+    <div class="hero-right">
+      <div class="hero-svg-wrap">
+        <!-- Main Hero SVG Illustration -->
+        <svg viewBox="0 0 460 460" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 40px 80px rgba(29,91,255,.18));">
+          <!-- Background circle -->
+          <circle cx="230" cy="230" r="200" fill="url(#grad-bg)" opacity=".08"/>
+          <!-- Outer ring -->
+          <circle cx="230" cy="230" r="195" stroke="url(#grad-ring)" stroke-width="1.5" stroke-dasharray="8 6"/>
+          <!-- Mid ring -->
+          <circle cx="230" cy="230" r="148" stroke="rgba(29,91,255,.15)" stroke-width="1"/>
 
-    <!-- 3. node_modules -->
-    <div class="mcard hy">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central monitor -->
+          <rect x="130" y="155" width="200" height="130" rx="12" fill="white" stroke="#1D5BFF" stroke-width="2"/>
+          <!-- Screen area -->
+          <rect x="140" y="163" width="180" height="105" rx="7" fill="#F0F4FF"/>
+          <!-- Monitor stand -->
+          <rect x="205" y="285" width="50" height="16" rx="4" fill="#E5EAFF"/>
+          <rect x="195" y="298" width="70" height="6" rx="3" fill="#CBD5FF"/>
+
+          <!-- Code lines on screen -->
+          <rect x="152" y="175" width="70" height="5" rx="2.5" fill="#1D5BFF" opacity=".8"/>
+          <rect x="152" y="185" width="90" height="5" rx="2.5" fill="#0ABFA3" opacity=".7"/>
+          <rect x="152" y="195" width="55" height="5" rx="2.5" fill="#FF4D38" opacity=".6"/>
+          <rect x="152" y="205" width="80" height="5" rx="2.5" fill="#8B5CF6" opacity=".6"/>
+          <rect x="152" y="215" width="65" height="5" rx="2.5" fill="#1D5BFF" opacity=".5"/>
+          <rect x="152" y="228" width="100" height="8" rx="4" fill="#1D5BFF" opacity=".15"/>
+          <rect x="157" y="230" width="90" height="4" rx="2" fill="#1D5BFF" opacity=".5"/>
+          <rect x="152" y="244" width="72" height="5" rx="2.5" fill="#0ABFA3" opacity=".5"/>
+          <rect x="152" y="254" width="88" height="5" rx="2.5" fill="#FFB30F" opacity=".5"/>
+
+          <!-- Orbiting data nodes -->
+          <circle cx="230" cy="48" r="14" fill="#1D5BFF" opacity=".95">
+            <animateTransform attributeName="transform" type="rotate" from="0 230 230" to="360 230 230" dur="18s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="412" cy="310" r="10" fill="#0ABFA3" opacity=".9">
+            <animateTransform attributeName="transform" type="rotate" from="120 230 230" to="480 230 230" dur="22s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="80" cy="160" r="8" fill="#FF4D38" opacity=".85">
+            <animateTransform attributeName="transform" type="rotate" from="240 230 230" to="600 230 230" dur="16s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="390" cy="140" r="6" fill="#FFB30F" opacity=".9">
+            <animateTransform attributeName="transform" type="rotate" from="60 230 230" to="420 230 230" dur="12s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Connection lines to nodes -->
+          <line x1="230" y1="155" x2="230" y2="62" stroke="#1D5BFF" stroke-width="1" stroke-dasharray="4 4" opacity=".4">
+            <animateTransform attributeName="transform" type="rotate" from="0 230 230" to="360 230 230" dur="18s" repeatCount="indefinite"/>
+          </line>
+          <line x1="230" y1="230" x2="402" y2="302" stroke="#0ABFA3" stroke-width="1" stroke-dasharray="4 4" opacity=".3">
+            <animateTransform attributeName="transform" type="rotate" from="120 230 230" to="480 230 230" dur="22s" repeatCount="indefinite"/>
+          </line>
+          <line x1="230" y1="230" x2="88" y2="155" stroke="#FF4D38" stroke-width="1" stroke-dasharray="4 4" opacity=".3">
+            <animateTransform attributeName="transform" type="rotate" from="240 230 230" to="600 230 230" dur="16s" repeatCount="indefinite"/>
+          </line>
+
+          <!-- Database cylinder bottom -->
+          <ellipse cx="360" cy="358" rx="36" ry="12" fill="#E8EEFF" stroke="#1D5BFF" stroke-width="1.5"/>
+          <rect x="324" y="318" width="72" height="40" fill="#F0F4FF" stroke="#1D5BFF" stroke-width="1.5"/>
+          <ellipse cx="360" cy="318" rx="36" ry="12" fill="#DAEAFF" stroke="#1D5BFF" stroke-width="1.5"/>
+          <ellipse cx="360" cy="330" rx="36" ry="12" fill="none" stroke="#1D5BFF" stroke-width="1" stroke-dasharray="4 3" opacity=".5"/>
+
+          <!-- Cloud icon -->
+          <path d="M88 310 Q78 310 78 300 Q78 290 88 290 Q90 280 102 280 Q114 280 116 290 Q124 290 124 300 Q124 310 114 310 Z" fill="#F0F4FF" stroke="#0ABFA3" stroke-width="1.5"/>
+          <line x1="96" y1="312" x2="96" y2="322" stroke="#0ABFA3" stroke-width="1.5"/>
+          <line x1="104" y1="312" x2="104" y2="326" stroke="#0ABFA3" stroke-width="1.5"/>
+          <line x1="112" y1="312" x2="112" y2="322" stroke="#0ABFA3" stroke-width="1.5"/>
+
+          <!-- Gear icon -->
+          <g transform="translate(352,90)">
+            <circle cx="0" cy="0" r="14" fill="#FFF8E8" stroke="#FFB30F" stroke-width="2"/>
+            <circle cx="0" cy="0" r="6" fill="#FFB30F" opacity=".5"/>
+            <line x1="0" y1="-14" x2="0" y2="-18" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="0" y1="14" x2="0" y2="18" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="-14" y1="0" x2="-18" y2="0" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="14" y1="0" x2="18" y2="0" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="-9.9" y1="-9.9" x2="-12.7" y2="-12.7" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="9.9" y1="9.9" x2="12.7" y2="12.7" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="9.9" y1="-9.9" x2="12.7" y2="-12.7" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+            <line x1="-9.9" y1="9.9" x2="-12.7" y2="12.7" stroke="#FFB30F" stroke-width="3" stroke-linecap="round"/>
+          </g>
+
           <defs>
-            <radialGradient id="bh2" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#000"/>
-              <stop offset="55%" stop-color="#0a0500"/>
-              <stop offset="100%" stop-color="#1a0d00"/>
+            <radialGradient id="grad-bg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1D5BFF"/>
+              <stop offset="100%" stop-color="#0ABFA3"/>
             </radialGradient>
+            <linearGradient id="grad-ring" x1="0" y1="0" x2="460" y2="460">
+              <stop offset="0%" stop-color="#1D5BFF" stop-opacity=".6"/>
+              <stop offset="50%" stop-color="#0ABFA3" stop-opacity=".4"/>
+              <stop offset="100%" stop-color="#FF4D38" stop-opacity=".3"/>
+            </linearGradient>
           </defs>
-          <ellipse cx="55" cy="55" rx="46" ry="17" fill="none" stroke="#ffe600" stroke-width="1" opacity=".25"/>
-          <ellipse cx="55" cy="55" rx="40" ry="13" fill="none" stroke="#ffe600" stroke-width="1.5" opacity=".45"/>
-          <ellipse cx="55" cy="55" rx="32" ry="9" fill="none" stroke="#ff8c00" stroke-width="2.5" opacity=".7"/>
-          <circle cx="55" cy="55" r="24" fill="url(#bh2)"/>
-          <circle cx="55" cy="55" r="24" stroke="#ff8c00" stroke-width="1.5" opacity=".35"/>
-          <text x="55" y="51" fill="#ffe600" font-size="5.5" font-family="monospace" text-anchor="middle">node_</text>
-          <text x="55" y="59" fill="#ffe600" font-size="5.5" font-family="monospace" text-anchor="middle">modules</text>
-          <text x="55" y="98" fill="#ffe600" font-size="6.5" font-family="monospace" text-anchor="middle">3.2 ГБ</text>
-          <!-- падающие файлы -->
-          <rect x="8" y="28" width="9" height="7" rx="1" fill="#333"/>
-          <text x="12" y="34" fill="#aaa" font-size="4" text-anchor="middle">.js</text>
-          <path d="M17 35 Q30 44 32 50" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
-          <rect x="93" y="26" width="9" height="7" rx="1" fill="#333"/>
-          <text x="97" y="32" fill="#aaa" font-size="4" text-anchor="middle">.ts</text>
-          <path d="M93 33 Q80 43 78 50" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
-          <rect x="6" y="70" width="11" height="7" rx="1" fill="#333"/>
-          <text x="11" y="76" fill="#aaa" font-size="3.5" text-anchor="middle">.css</text>
-          <path d="M17 74 Q28 68 30 62" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
-          <text x="55" y="108" fill="#555" font-size="5" font-family="monospace" text-anchor="middle">для hello world</text>
         </svg>
-      </div>
-      <div class="mtitle y">node_modules</div>
-      <div class="mdesc">174 819 файлов.<br/>3.2 гигабайта.<br/>для hello world.</div>
-    </div>
 
-    <!-- 4. Резиновая утка -->
-    <div class="mcard hb">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="52" cy="74" rx="30" ry="22" fill="#ffe600" stroke="#cc9900" stroke-width="2"/>
-          <circle cx="68" cy="52" r="18" fill="#ffe600" stroke="#cc9900" stroke-width="2"/>
-          <circle cx="75" cy="47" r="4" fill="white"/>
-          <circle cx="76.5" cy="47" r="2" fill="#111"/>
-          <circle cx="77.5" cy="46" r=".8" fill="white"/>
-          <path d="M84 53 L96 55 L84 58 Z" fill="#ff8c00" stroke="#cc5500" stroke-width="1"/>
-          <path d="M28 70 Q38 60 48 67" stroke="#cc9900" stroke-width="2" fill="none"/>
-          <!-- шапка -->
-          <rect x="58" y="30" width="20" height="5" fill="#111" rx="1"/>
-          <line x1="68" y1="30" x2="68" y2="24" stroke="#111" stroke-width="2"/>
-          <polygon points="68,17 79,23 68,29 57,23" fill="#111"/>
-          <line x1="79" y1="23" x2="82" y2="30" stroke="#111" stroke-width="1.5"/>
-          <circle cx="82" cy="31" r="2.5" fill="#ffe600"/>
-          <!-- пузырь -->
-          <rect x="4" y="8" width="56" height="30" rx="4" fill="#080808" stroke="#00d4ff" stroke-width="1.5"/>
-          <polygon points="28,38 34,46 40,38" fill="#080808" stroke="#00d4ff" stroke-width="1.5"/>
-          <line x1="28" y1="38" x2="40" y2="38" stroke="#080808" stroke-width="2.5"/>
-          <text x="32" y="22" fill="#00d4ff" font-size="5.5" font-family="monospace" text-anchor="middle">а зачем ты</text>
-          <text x="32" y="30" fill="#00d4ff" font-size="5.5" font-family="monospace" text-anchor="middle">это делаешь?</text>
-        </svg>
-      </div>
-      <div class="mtitle b">Резиновая утка</div>
-      <div class="mdesc">лучший дебаггер.<br/>молчит, но осуждает.<br/>знает всё.</div>
-    </div>
-
-    <!-- 5. git push force -->
-    <div class="mcard hr">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="6" y="4" width="98" height="18" rx="2" fill="#1a0000" stroke="#ff2d55" stroke-width="1.5"/>
-          <text x="55" y="16" fill="#ff2d55" font-size="7.5" font-family="monospace" text-anchor="middle">git push --force</text>
-          <ellipse cx="55" cy="60" rx="27" ry="25" fill="#0a0000" stroke="#ff2d55" stroke-width="2"/>
-          <rect x="38" y="76" width="34" height="14" rx="2" fill="#0a0000" stroke="#ff2d55" stroke-width="2"/>
-          <rect x="41" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
-          <rect x="52" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
-          <rect x="63" y="82" width="7" height="9" rx="1" fill="#0a0000" stroke="#ff2d55" stroke-width="1.5"/>
-          <ellipse cx="44" cy="57" rx="8" ry="9" fill="#050000" stroke="#ff2d55" stroke-width="1.5"/>
-          <ellipse cx="66" cy="57" rx="8" ry="9" fill="#050000" stroke="#ff2d55" stroke-width="1.5"/>
-          <ellipse cx="44" cy="57" rx="4" ry="5" fill="#ff2d55" opacity=".5"/>
-          <ellipse cx="66" cy="57" rx="4" ry="5" fill="#ff2d55" opacity=".5"/>
-          <path d="M52 70 L55 74 L58 70" stroke="#ff2d55" stroke-width="1.5" fill="none"/>
-          <path d="M29 40 L36 51 L29 60" stroke="#ff2d55" stroke-width="1" opacity=".4"/>
-          <path d="M81 43 L74 54 L81 63" stroke="#ff2d55" stroke-width="1" opacity=".4"/>
-          <text x="55" y="104" fill="#555" font-size="5.5" font-family="monospace" text-anchor="middle">история? не слышал</text>
-        </svg>
-      </div>
-      <div class="mtitle r">git push --force</div>
-      <div class="mdesc">история коммитов?<br/>не слышал.<br/>коллеги? спят.</div>
-    </div>
-
-    <!-- 6. Пятница деплой -->
-    <div class="mcard hy">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="0" y="2" width="110" height="16" fill="#1a0000"/>
-          <text x="55" y="13" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">ДЕПЛОЙ В ПЯТНИЦУ</text>
-          <rect x="22" y="38" width="66" height="62" fill="#0a0a0a" stroke="#444" stroke-width="1.5"/>
-          <line x1="22" y1="58" x2="88" y2="58" stroke="#333"/>
-          <line x1="22" y1="78" x2="88" y2="78" stroke="#333"/>
-          <rect x="30" y="44" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
-          <rect x="49" y="44" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
-          <rect x="68" y="44" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
-          <rect x="30" y="64" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
-          <rect x="49" y="64" width="11" height="9" rx="1" fill="#ffe600" opacity=".8"/>
-          <rect x="68" y="64" width="11" height="9" rx="1" fill="#ff2d55" opacity=".9"/>
-          <rect x="44" y="83" width="22" height="17" rx="1" fill="#161616" stroke="#555"/>
-          <!-- огонь -->
-          <path d="M62 58 Q56 46 64 36 Q60 48 73 40 Q67 52 74 47 Q70 58 62 58Z" fill="#ff8c00" opacity=".95"/>
-          <path d="M67 60 Q62 49 69 41 Q66 53 75 46 Q72 57 67 60Z" fill="#ffe600" opacity=".85"/>
-          <path d="M28 78 Q26 67 34 60 Q31 70 38 65 Q35 75 28 78Z" fill="#ff8c00" opacity=".7"/>
-          <!-- дым -->
-          <ellipse cx="66" cy="32" rx="5" ry="7" fill="#222" opacity=".65"/>
-          <ellipse cx="72" cy="25" rx="4" ry="6" fill="#222" opacity=".45"/>
-          <ellipse cx="78" cy="18" rx="3" ry="5" fill="#222" opacity=".3"/>
-          <!-- флаг -->
-          <line x1="55" y1="38" x2="55" y2="22" stroke="#888" stroke-width="1.5"/>
-          <path d="M55 22 L70 27 L55 32Z" fill="#00ff41"/>
-          <text x="62" y="29" fill="#000" font-size="4" font-family="monospace">live</text>
-        </svg>
-      </div>
-      <div class="mtitle y">пятница 17:58</div>
-      <div class="mdesc">«маленькое изменение»<br/>суббота 4:00 утра:<br/>горит Иса</div>
-    </div>
-
-    <!-- 7. Stack Overflow капельница -->
-    <div class="mcard hg">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="55" y1="8" x2="55" y2="92" stroke="#555" stroke-width="2.5"/>
-          <line x1="34" y1="10" x2="76" y2="10" stroke="#555" stroke-width="2.5"/>
-          <rect x="32" y="12" width="46" height="42" rx="4" fill="#0a0500" stroke="#ff8c00" stroke-width="2"/>
-          <rect x="32" y="12" width="46" height="15" rx="4" fill="#150a00"/>
-          <text x="55" y="22" fill="#ff8c00" font-size="6" font-family="monospace" text-anchor="middle">Stack</text>
-          <text x="55" y="29" fill="#ff8c00" font-size="6" font-family="monospace" text-anchor="middle">Overflow</text>
-          <rect x="34" y="29" width="42" height="23" fill="#ff8c00" opacity=".12"/>
-          <text x="55" y="39" fill="#ff8c00" font-size="5.5" font-family="monospace" text-anchor="middle">ctrl+c</text>
-          <text x="55" y="47" fill="#ff8c00" font-size="5.5" font-family="monospace" text-anchor="middle">ctrl+v</text>
-          <path d="M55 54 Q55 72 44 76 Q37 79 37 88" stroke="#777" stroke-width="2" fill="none"/>
-          <rect x="27" y="85" width="30" height="15" rx="5" fill="#1a1005" stroke="#555" stroke-width="1"/>
-          <line x1="35" y1="91" x2="27" y2="91" stroke="#aaa" stroke-width="1.5"/>
-          <path d="M27 91 L20 89 L22 93Z" fill="#aaa"/>
-          <text x="55" y="108" fill="#00ff41" font-size="5.5" font-family="monospace" text-anchor="middle">пульс: стабильно</text>
-        </svg>
-      </div>
-      <div class="mtitle g">Жизненно важно</div>
-      <div class="mdesc">без stackoverflow<br/>разработка невозможна.<br/>медицинский факт.</div>
-    </div>
-
-    <!-- 8. Сертификат работает на моей машине -->
-    <div class="mcard hg">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="6" y="10" width="98" height="90" rx="3" fill="#060900" stroke="#ffe600" stroke-width="2"/>
-          <rect x="10" y="14" width="90" height="82" rx="2" fill="none" stroke="#ffe600" stroke-width="1" stroke-dasharray="3,3" opacity=".4"/>
-          <text x="55" y="30" fill="#ffe600" font-size="6.5" font-family="monospace" text-anchor="middle">СЕРТИФИКАТ</text>
-          <line x1="14" y1="34" x2="96" y2="34" stroke="#ffe600" stroke-width="1" opacity=".3"/>
-          <text x="55" y="52" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">РАБОТАЕТ</text>
-          <text x="55" y="62" fill="#ff2d55" font-size="6" font-family="monospace" text-anchor="middle">НА МОЕЙ</text>
-          <text x="55" y="72" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">МОШИНЕ™</text>
-          <circle cx="55" cy="59" r="26" fill="none" stroke="#00ff41" stroke-width="2" opacity=".15"/>
-          <path d="M18" y="86" fill="#ffe600"/>
-          <polygon points="18,84 23,80 28,84 23,88" fill="#ffe600" opacity=".8"/>
-          <polygon points="82,84 87,80 92,84 87,88" fill="#ffe600" opacity=".8"/>
-          <line x1="30" y1="84" x2="80" y2="84" stroke="#333"/>
-          <text x="55" y="95" fill="#444" font-size="4.5" font-family="monospace" text-anchor="middle">подпись: я сам. дата: всегда</text>
-        </svg>
-      </div>
-      <div class="mtitle g">Официальный сертификат</div>
-      <div class="mdesc">ваша проблема —<br/>это ваша проблема.<br/>у меня Иса работает.</div>
-    </div>
-
-    <!-- 9. TODO-лист -->
-    <div class="mcard hb">
-      <div class="msvg">
-        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="16" y="8" width="78" height="94" rx="3" fill="#080a0f" stroke="#00d4ff" stroke-width="2"/>
-          <rect x="16" y="8" width="13" height="94" rx="3" fill="#04101a" stroke="#00d4ff" stroke-width="2"/>
-          <circle cx="22" cy="26" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
-          <circle cx="22" cy="42" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
-          <circle cx="22" cy="58" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
-          <circle cx="22" cy="74" r="4" fill="#080a0f" stroke="#00d4ff" stroke-width="1.5"/>
-          <rect x="36" y="22" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
-          <text x="48" y="29" fill="#444" font-size="6" font-family="monospace">рефакторинг</text>
-          <rect x="36" y="38" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
-          <text x="48" y="45" fill="#444" font-size="6" font-family="monospace">написать тесты</text>
-          <rect x="36" y="54" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
-          <text x="48" y="61" fill="#444" font-size="6" font-family="monospace">документация</text>
-          <rect x="36" y="70" width="8" height="8" rx="1" fill="none" stroke="#00d4ff" stroke-width="1.2"/>
-          <text x="48" y="77" fill="#444" font-size="5.5" font-family="monospace">удалить console.log</text>
-          <line x1="28" y1="16" x2="88" y2="92" stroke="#ff2d55" stroke-width="3.5" stroke-linecap="round" opacity=".75"/>
-          <line x1="88" y1="16" x2="28" y2="92" stroke="#ff2d55" stroke-width="3.5" stroke-linecap="round" opacity=".75"/>
-          <rect x="26" y="95" width="58" height="12" rx="2" fill="#0a0000"/>
-          <text x="55" y="104" fill="#ff2d55" font-size="6.5" font-family="monospace" text-anchor="middle">// никогда</text>
-        </svg>
-      </div>
-      <div class="mtitle b">TODO-лист</div>
-      <div class="mdesc">2026 год.<br/>задача: сделать qr.<br/>статус: скоро.</div>
-    </div>
-
-  </div>
-</section>
-<hr class="divider"/>
-
-<!-- PROJECTS -->
-<section id="projects">
-  <h2>// мои <em>проекты</em> (настоящие (думаю что))</h2>
-  <div class="plist">
-    <div class="pcard">
-      <svg class="psvg" viewBox="0 0 64 64" fill="none">
-        <rect x="4" y="8" width="56" height="48" rx="3" fill="#0a0a0a" stroke="#ffe600" stroke-width="1.5"/>
-        <circle cx="12" cy="14" r="2.5" fill="#ff2d55"/> <circle cx="20" cy="14" r="2.5" fill="#ffe600"/> <circle cx="28" cy="14" r="2.5" fill="#00ff41"/>
-        <line x1="4" y1="20" x2="60" y2="20" stroke="#1f1f1f"/>
-        <text x="32" y="44" fill="#ffe600" font-size="24" text-anchor="middle" font-family="monospace">47</text>
-        <text x="32" y="52" fill="#444" font-size="5.5" font-family="monospace" text-anchor="middle">TODO.app</text>
-      </svg>
-      <div>
-        <div class="ptitle">todo-app-v47-FINAL-real-final-v2</div>
-        <div class="pdesc">ещё один todo-app. отличается тёмной темой и тем, что я его действительно закончил. задеплоил в прод. уронил прод. поднял прод. задеплоил снова.</div>
+        <!-- Floating code cards -->
+        <div class="float-card card-1">
+          <div class="card-label">// жүйе.статусы</div>
+          <div class="card-val"><span class="g">✓</span> ONLINE</div>
+        </div>
+        <div class="float-card card-2">
+          <div class="card-label">деректер базасы</div>
+          <div class="card-val">PostgreSQL <span class="g">●</span></div>
+        </div>
+        <div class="float-card card-3">
+          <div class="card-label">API сұранысы</div>
+          <div class="card-val"><span class="g">200</span> <span class="r">ms</span></div>
+        </div>
       </div>
     </div>
-    <div class="pcard">
-      <svg class="psvg" viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="26" fill="#04101a" stroke="#00d4ff" stroke-width="1.5"/>
-        <circle cx="22" cy="27" r="5" fill="#020d14" stroke="#00d4ff" stroke-width="1"/> <circle cx="23" cy="27" r="2" fill="#00d4ff"/>
-        <circle cx="42" cy="27" r="5" fill="#020d14" stroke="#00d4ff" stroke-width="1"/> <circle cx="43" cy="27" r="2" fill="#00d4ff"/>
-        <path d="M20 38 Q32 44 44 38" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
-        <text x="32" y="22" fill="#00d4ff" font-size="7" font-family="monospace" text-anchor="middle">AI</text>
-        <path d="M24 12 Q28 6 32 12" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
-        <path d="M40 12 Q36 6 32 12" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
-      </svg>
-      <div>
-        <div class="ptitle">claude-обёртка-для-claude-обёртки</div>
-        <div class="pdesc">обёртка над claude, которая внутри вызывает другую обёртку. где-то в рекурсии оно стало сознательным. боюсь обновлять зависимости.</div>
+
+    <div class="scroll-hint">
+      <span>Төмен</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="section-inner">
+      <div class="about-grid">
+
+        <div class="about-visual reveal">
+          <div class="about-main-card">
+            <div class="about-card-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect width="48" height="48" rx="14" fill="rgba(255,255,255,.15)"/>
+                <rect x="10" y="14" width="28" height="20" rx="3" fill="none" stroke="white" stroke-width="2"/>
+                <rect x="14" y="18" width="20" height="12" rx="2" fill="rgba(255,255,255,.2)"/>
+                <line x1="18" y1="21" x2="26" y2="21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="18" y1="24" x2="30" y2="24" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="18" y1="27" x2="22" y2="27" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <rect x="21" y="34" width="6" height="4" rx="1" fill="rgba(255,255,255,.5)"/>
+                <rect x="16" y="37" width="16" height="2" rx="1" fill="rgba(255,255,255,.3)"/>
+              </svg>
+            </div>
+            <div class="about-card-title">Ақпараттық Жүйелер</div>
+            <div class="about-card-text">
+              Ұйымдарды цифрлық трансформацияға дайындайтын, деректерді мәнге айналдыратын, үдерістерді автоматтандыратын жан-жақты мамандық.
+            </div>
+          </div>
+
+          <div class="about-mini-cards">
+            <div class="mini-card">
+              <div class="mini-card-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect width="36" height="36" rx="10" fill="rgba(0,200,224,.1)"/>
+                  <circle cx="18" cy="18" r="8" stroke="#00C8E0" stroke-width="2"/>
+                  <circle cx="18" cy="18" r="3" fill="#00C8E0"/>
+                  <line x1="18" y1="6" x2="18" y2="10" stroke="#00C8E0" stroke-width="1.5"/>
+                  <line x1="18" y1="26" x2="18" y2="30" stroke="#00C8E0" stroke-width="1.5"/>
+                  <line x1="6" y1="18" x2="10" y2="18" stroke="#00C8E0" stroke-width="1.5"/>
+                  <line x1="26" y1="18" x2="30" y2="18" stroke="#00C8E0" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="mini-card-title">Деректерді талдау</div>
+              <div class="mini-card-text">Бизнес шешімдерін деректер негізінде қабылдау</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect width="36" height="36" rx="10" fill="rgba(255,77,56,.1)"/>
+                  <path d="M11 18 L15 22 L25 12" stroke="#FF4D38" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="18" cy="18" r="10" stroke="#FF4D38" stroke-width="1.5" opacity=".4"/>
+                </svg>
+              </div>
+              <div class="mini-card-title">Жобаларды басқару</div>
+              <div class="mini-card-text">IT жобаларын жоспарлау және жеткізу</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect width="36" height="36" rx="10" fill="rgba(139,92,246,.1)"/>
+                  <rect x="8" y="10" width="20" height="16" rx="3" fill="none" stroke="#8B5CF6" stroke-width="1.5"/>
+                  <circle cx="13" cy="18" r="2.5" fill="#8B5CF6"/>
+                  <circle cx="23" cy="18" r="2.5" fill="#8B5CF6"/>
+                  <line x1="15.5" y1="18" x2="20.5" y2="18" stroke="#8B5CF6" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="mini-card-title">Жүйе интеграциясы</div>
+              <div class="mini-card-text">Платформаларды бірлестіру және автоматтандыру</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect width="36" height="36" rx="10" fill="rgba(10,191,163,.1)"/>
+                  <path d="M10 26 L18 10 L26 26" stroke="#0ABFA3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="13" y1="22" x2="23" y2="22" stroke="#0ABFA3" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="mini-card-title">Аналитика</div>
+              <div class="mini-card-text">Деректер негізінде стратегиялық шешімдер</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content reveal">
+          <div class="section-label">// мамандық туралы</div>
+          <h2 class="section-title">Ақпараттық<br>Жүйелер деген не?</h2>
+          <p>
+            <strong>Ақпараттық жүйелер (АЖ)</strong> — ұйымдарда деректерді жинауға, өңдеуге, сақтауға және тарату үшін арналған кешенді жүйені зерттейтін мамандық. Бұл — IT мен бизнестің тоғысқан жері.
+          </p>
+          <p>
+            АЖ маманы <strong>программалық жасақтама</strong>, <strong>деректер базасы</strong>, <strong>желілер</strong> және <strong>кибербезопасность</strong> салаларын меңгере отырып, ұйымның цифрлық трансформациясын жетекшілейді.
+          </p>
+          <p>
+            Бүгінгі таңда барлық корпорациялар, мемлекеттік органдар, банктер, ауруханалар — барлығы АЖ мамандарына мұқтаж. Бұл мамандық болашақта да сұранысын жоғалтпайды.
+          </p>
+          <div class="about-tags">
+            <span class="tag">Бизнес-аналитика</span>
+            <span class="tag">ERP жүйелері</span>
+            <span class="tag">Деректер базасы</span>
+            <span class="tag">Бұлттық технологиялар</span>
+            <span class="tag">Кибербезопасность</span>
+            <span class="tag">Автоматтандыру</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="pcard">
-      <svg class="psvg" viewBox="0 0 64 64" fill="none">
-        <polygon points="32,4 60,18 60,46 32,60 4,46 4,18" fill="#03100a" stroke="#00ff41" stroke-width="1.5"/>
-        <text x="32" y="27" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">BLOCK</text>
-        <text x="32" y="36" fill="#00ff41" font-size="6" font-family="monospace" text-anchor="middle">CHAIN</text>
-        <text x="32" y="47" fill="#ff2d55" font-size="5" font-family="monospace" text-anchor="middle">gas: $47</text>
-      </svg>
-      <div>
-        <div class="ptitle">блокчейн-для-списка-покупок</div>
-        <div class="pdesc">децентрализованный, неизменяемый трекер продуктов. стоимость сайта: 200₸. стоимость гориллы: 600₸.</div>
+  </section>
+
+  <!-- ─── SKILLS ────────────────────────────────────────────────── -->
+  <section id="skills">
+    <div class="section-inner">
+      <div class="skills-header">
+        <div class="reveal">
+          <div class="section-label">// негізгі дағдылар</div>
+          <h2 class="section-title">Маман не<br>білуі керек?</h2>
+        </div>
+        <p class="section-desc reveal" style="max-width:360px">
+          АЖ маманы техникалық да, аналитикалық да, коммуникациялық да дағдыларды меңгереді.
+        </p>
+      </div>
+
+      <div class="skills-grid">
+
+        <!-- 1 -->
+        <div class="skill-card c1 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(29,91,255,.1)"/>
+              <path d="M14 28 L20 16 L26 24 L30 20" stroke="#1D5BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="30" cy="20" r="3" fill="#1D5BFF"/>
+            </svg>
+          </div>
+          <div class="skill-name">Деректер базасын басқару</div>
+          <div class="skill-desc">SQL, NoSQL, деректер моделдеуі, оптимизация және транзакциялық жүйелер.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>SQL / NoSQL</span><span>92%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="92"></div></div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="skill-card c2 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(10,191,163,.1)"/>
+              <rect x="10" y="14" width="10" height="16" rx="3" fill="none" stroke="#0ABFA3" stroke-width="2"/>
+              <rect x="24" y="10" width="10" height="20" rx="3" fill="none" stroke="#0ABFA3" stroke-width="2"/>
+              <line x1="20" y1="22" x2="24" y2="22" stroke="#0ABFA3" stroke-width="1.5" stroke-dasharray="3 2"/>
+            </svg>
+          </div>
+          <div class="skill-name">Жүйелерді талдау</div>
+          <div class="skill-desc">Бизнес-процестерді модельдеу, BPMN, UML диаграммалары және техникалық ТЗ.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>Бизнес-аналитика</span><span>88%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="skill-card c3 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(255,77,56,.1)"/>
+              <path d="M16 20 L12 22 L16 24" stroke="#FF4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M28 20 L32 22 L28 24" stroke="#FF4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="20" y1="15" x2="24" y2="29" stroke="#FF4D38" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="skill-name">Бағдарламалау</div>
+          <div class="skill-desc">Python, Java, JavaScript, C# тілдері. Web-қосымшалар мен API интеграциясы.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>Python / Java</span><span>85%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="skill-card c4 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(255,179,15,.1)"/>
+              <path d="M22 12 L30 16 L30 28 L22 32 L14 28 L14 16 Z" stroke="#FFB30F" stroke-width="2" fill="none"/>
+              <circle cx="22" cy="22" r="4" stroke="#FFB30F" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="skill-name">Кибербезопасность</div>
+          <div class="skill-desc">Ақпаратты қорғау, аутентификация, шифрлау, қауіп-қатерлерді анықтау.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>Security</span><span>80%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="skill-card c5 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(139,92,246,.1)"/>
+              <rect x="10" y="20" width="24" height="14" rx="3" fill="none" stroke="#8B5CF6" stroke-width="2"/>
+              <ellipse cx="22" cy="20" rx="8" ry="4" fill="none" stroke="#8B5CF6" stroke-width="2"/>
+              <line x1="16" y1="24" x2="28" y2="24" stroke="#8B5CF6" stroke-width="1.5" opacity=".5"/>
+              <line x1="16" y1="28" x2="28" y2="28" stroke="#8B5CF6" stroke-width="1.5" opacity=".5"/>
+            </svg>
+          </div>
+          <div class="skill-name">Бұлттық технологиялар</div>
+          <div class="skill-desc">AWS, Azure, Google Cloud. Серверсіз архитектура, контейнерлер, DevOps.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>Cloud / DevOps</span><span>78%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="skill-card c6 reveal">
+          <div class="skill-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <rect width="44" height="44" rx="12" fill="rgba(0,200,224,.1)"/>
+              <circle cx="22" cy="22" r="10" stroke="#00C8E0" stroke-width="2"/>
+              <path d="M22 12 C26 16 26 28 22 32" stroke="#00C8E0" stroke-width="1.5"/>
+              <path d="M22 12 C18 16 18 28 22 32" stroke="#00C8E0" stroke-width="1.5"/>
+              <line x1="12" y1="22" x2="32" y2="22" stroke="#00C8E0" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="skill-name">Желі және интеграция</div>
+          <div class="skill-desc">TCP/IP, REST API, микросервистер, EDI, ERP жүйелерімен интеграция.</div>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar-label"><span>API / Networks</span><span>83%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="83"></div></div>
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="pcard">
-      <svg class="psvg" viewBox="0 0 64 64" fill="none">
-        <rect x="6" y="6" width="52" height="52" rx="3" fill="#0a0a0a" stroke="#ff2d55" stroke-width="1.5"/>
-        <circle cx="12" cy="12" r="3" fill="#ff2d55" opacity=".6"/>
-        <circle cx="52" cy="12" r="3" fill="#ffe600" opacity=".6"/>
-        <text x="32" y="35" fill="#ff2d55" font-size="16" font-family="monospace" text-anchor="middle">&lt;/&gt;</text>
-        <text x="32" y="50" fill="#444" font-size="5" font-family="monospace" text-anchor="middle">этот сайт</text>
-      </svg>
-      <div>
-        <div class="ptitle">этот сайт</div>
-        <div class="pdesc">начинался как баннер. превратился в воздух. содержит конами-код (↑↑↓↓←→←→BA), 9 svg и Иса кризис.</div>
+  </section>
+
+  <!-- ─── CAREER PATH ────────────────────────────────────────────── -->
+  <section id="career">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-label">// мансап жолы</div>
+        <h2 class="section-title">Карьера<br>баспалдақтары</h2>
+        <p class="section-desc">
+          АЖ маманының мансабы тек жоғары — кез-келген саладан орын табуға болады.
+        </p>
+      </div>
+
+      <div class="timeline">
+
+        <div class="timeline-item reveal">
+          <div class="tl-year">1–2 жыл</div>
+          <div class="tl-badge">Бастаушы</div>
+          <div class="tl-title">Junior IT-маман / Аналитик</div>
+          <div class="tl-desc">
+            Жүйелерді конфигурациялау, деректер базасымен жұмыс, техникалық қолдау. Жалақы: ₸250 000 – ₸450 000
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="tl-year">3–5 жыл</div>
+          <div class="tl-badge">Орта деңгей</div>
+          <div class="tl-title">Middle Systems Analyst / IT Project Manager</div>
+          <div class="tl-desc">
+            Жобаларды жоспарлау, бизнес-талдау, жүйе архитектурасын жобалау. Жалақы: ₸600 000 – ₸900 000
+          </div>
+        </div>
+
+        <div class="timeline-item active reveal">
+          <div class="tl-year">6–9 жыл</div>
+          <div class="tl-badge" style="background:rgba(29,91,255,.1);border-color:rgba(29,91,255,.3);color:var(--blue)">Тәжірибелі</div>
+          <div class="tl-title">Senior IT Architect / Solution Architect</div>
+          <div class="tl-desc">
+            Корпоративтік жүйелер архитектурасы, бұлттық стратегия, техникалық жетекшілік. Жалақы: ₸1 000 000 – ₸1 800 000
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="tl-year">10+ жыл</div>
+          <div class="tl-badge" style="background:rgba(255,179,15,.12);border-color:rgba(255,179,15,.3);color:#c48a00">Топ деңгей</div>
+          <div class="tl-title">CIO / IT Director / CTO</div>
+          <div class="tl-desc">
+            Компанияның цифрлық стратегиясын басқару, IT командасын жетекшілеу, инновациялық жобаларды іске қосу. Жалақы: ₸2 500 000+
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-</section>
-<hr class="divider"/>
+  </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <h2>// <em>связаться</em> (с Исламбеком)</h2>
-  <div class="cbox">
-    <p>отвечаю на steam быстрее чем на whatsapp.<br/>но медленнее чем своя задница.</p>
-    <div class="btns">
-      <a href="https://github.com" class="btn g" target="_blank">GitHub ↗</a>
-      <a href="mailto:dev@localhost" class="btn r">Email (404) ↗</a>
-      <a href="#hero" class="btn g">↑ Наверх</a>
+  <!-- ─── TECHNOLOGIES ───────────────────────────────────────────── -->
+  <section id="tech">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-label">// технологиялар</div>
+        <h2 class="section-title">Жұмыс жасайтын<br>технологиялар</h2>
+      </div>
     </div>
-  </div>
-</section>
 
-<footer>
-  сделано с <span>болью</span> и console.log ·
-  без дизайнеров ·
-  <span>© 2026 — ∞</span> · попробуй ↑↑↓↓←→←→BA
-</footer>
+    <!-- Marquee Row 1 -->
+    <div class="tech-marquee-wrap" style="margin-top:3rem">
+      <div class="tech-track">
+        <!-- duplicated for infinite scroll -->
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#336791"/><path d="M11 4 C7.1 4 4 7.1 4 11 C4 14.9 7.1 18 11 18 C14.9 18 18 14.9 18 11 C18 7.1 14.9 4 11 4Z" fill="white" opacity=".9"/><path d="M8 11.5 L10 13.5 L14 9" stroke="#336791" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PostgreSQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#FF9900"/><rect x="5" y="9" width="12" height="8" rx="2" fill="white"/><rect x="8" y="5" width="6" height="8" rx="2" fill="white" opacity=".7"/></svg>
+          AWS Cloud
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3776AB"/><path d="M11 5 L15 14 L7 14 Z" fill="white"/><circle cx="15" cy="14" r="2" fill="white"/></svg>
+          Python
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#007396"/><path d="M7 8 L11 12 L15 8" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="11" y1="12" x2="11" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          Java
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#F7DF1E"/><rect x="6" y="6" width="10" height="10" rx="2" fill="#323330"/></svg>
+          JavaScript
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#4479A1"/><line x1="7" y1="11" x2="15" y2="11" stroke="white" stroke-width="2"/><line x1="11" y1="7" x2="11" y2="15" stroke="white" stroke-width="2"/></svg>
+          MySQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#0078D4"/><circle cx="11" cy="11" r="5" fill="white" opacity=".8"/></svg>
+          Azure
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#47A248"/><path d="M7 15 L11 7 L15 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          MongoDB
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#2496ED"/><circle cx="11" cy="11" r="5" fill="none" stroke="white" stroke-width="2"/><circle cx="11" cy="11" r="2" fill="white"/></svg>
+          Docker
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#E10098"/><path d="M8 14 L11 8 L14 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="13" y2="12" stroke="white" stroke-width="1.5"/></svg>
+          GraphQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#326CE5"/><circle cx="11" cy="11" r="4" fill="none" stroke="white" stroke-width="2"/><circle cx="11" cy="11" r="1.5" fill="white"/></svg>
+          Kubernetes
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#FF6F00"/><path d="M7 8 L11 5 L15 8 L15 14 L11 17 L7 14 Z" fill="white" opacity=".8"/></svg>
+          TensorFlow
+        </div>
+        <!-- duplicate -->
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#336791"/><path d="M11 4 C7.1 4 4 7.1 4 11 C4 14.9 7.1 18 11 18 C14.9 18 18 14.9 18 11 C18 7.1 14.9 4 11 4Z" fill="white" opacity=".9"/><path d="M8 11.5 L10 13.5 L14 9" stroke="#336791" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PostgreSQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#FF9900"/><rect x="5" y="9" width="12" height="8" rx="2" fill="white"/><rect x="8" y="5" width="6" height="8" rx="2" fill="white" opacity=".7"/></svg>
+          AWS Cloud
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3776AB"/><path d="M11 5 L15 14 L7 14 Z" fill="white"/><circle cx="15" cy="14" r="2" fill="white"/></svg>
+          Python
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#007396"/><path d="M7 8 L11 12 L15 8" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="11" y1="12" x2="11" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          Java
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#F7DF1E"/><rect x="6" y="6" width="10" height="10" rx="2" fill="#323330"/></svg>
+          JavaScript
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#4479A1"/><line x1="7" y1="11" x2="15" y2="11" stroke="white" stroke-width="2"/><line x1="11" y1="7" x2="11" y2="15" stroke="white" stroke-width="2"/></svg>
+          MySQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#0078D4"/><circle cx="11" cy="11" r="5" fill="white" opacity=".8"/></svg>
+          Azure
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#47A248"/><path d="M7 15 L11 7 L15 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          MongoDB
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#2496ED"/><circle cx="11" cy="11" r="5" fill="none" stroke="white" stroke-width="2"/><circle cx="11" cy="11" r="2" fill="white"/></svg>
+          Docker
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#E10098"/><path d="M8 14 L11 8 L14 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="13" y2="12" stroke="white" stroke-width="1.5"/></svg>
+          GraphQL
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#326CE5"/><circle cx="11" cy="11" r="4" fill="none" stroke="white" stroke-width="2"/><circle cx="11" cy="11" r="1.5" fill="white"/></svg>
+          Kubernetes
+        </div>
+        <div class="tech-item">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#FF6F00"/><path d="M7 8 L11 5 L15 8 L15 14 L11 17 L7 14 Z" fill="white" opacity=".8"/></svg>
+          TensorFlow
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script>
-const cur=document.getElementById('cur'),dot=document.getElementById('curdot');
-document.addEventListener('mousemove',e=>{
-  cur.style.left=e.clientX-8+'px';cur.style.top=e.clientY-8+'px';
-  dot.style.left=e.clientX-2+'px';dot.style.top=e.clientY-2+'px';
-});
-document.addEventListener('mousedown',()=>cur.classList.add('big'));
-document.addEventListener('mouseup',()=>cur.classList.remove('big'));
+  <!-- ─── PROSPECTS ─────────────────────────────────────────────── -->
+  <section id="prospects">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-label">// болашақ</div>
+        <h2 class="section-title">Жалақы және<br>болашақ</h2>
+      </div>
 
-(function(){
-  const c=document.getElementById('mx'),x=c.getContext('2d');
-  const rsz=()=>{c.width=innerWidth;c.height=innerHeight;};
-  rsz();addEventListener('resize',rsz);
-  const ch='АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯABCDEF0123456789</>{};npm git';
-  let dr=Array.from({length:Math.floor(innerWidth/18)},()=>Math.random()*-60);
-  setInterval(()=>{
-    x.fillStyle='rgba(0,0,0,.05)';x.fillRect(0,0,c.width,c.height);
-    x.fillStyle='#00ff41';x.font='13px monospace';
-    dr.forEach((y,i)=>{
-      x.fillText(ch[Math.floor(Math.random()*ch.length)],i*18,y*18);
-      if(y*18>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;
+      <div class="prospects-grid">
+        <div class="salary-card reveal">
+          <div class="salary-label">// Орташа жалақы / ай</div>
+          <div class="salary-amount">₸850K</div>
+          <div class="salary-unit">Қазақстандағы АЖ маманы</div>
+          <div class="salary-divider"></div>
+          <div class="salary-rows">
+            <div class="salary-row">
+              <span class="salary-row-label">Алматы / Астана</span>
+              <span class="salary-row-val" style="color:#00C8E0">₸900 000+</span>
+            </div>
+            <div class="salary-row">
+              <span class="salary-row-label">Өңірлер</span>
+              <span class="salary-row-val" style="color:#8B5CF6">₸500 000+</span>
+            </div>
+            <div class="salary-row">
+              <span class="salary-row-label">Халықаралық (remote)</span>
+              <span class="salary-row-val" style="color:#FFB30F">$3 000–8 000</span>
+            </div>
+            <div class="salary-row">
+              <span class="salary-row-label">CIO / IT Director</span>
+              <span class="salary-row-val" style="color:#FF4D38">₸3 000 000+</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prospect-list reveal">
+          <div class="prospect-item">
+            <div class="pi-icon">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="12" fill="rgba(29,91,255,.08)"/>
+                <path d="M13 27 L19 15 L25 21 L29 17" stroke="#1D5BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="29" cy="17" r="3" fill="#1D5BFF"/>
+              </svg>
+            </div>
+            <div>
+              <div class="pi-title">Жылдам өсетін сала</div>
+              <div class="pi-desc">IT нарығы жыл сайын 15-20% өсіп отырады. АЖ мамандарына деген сұраныс тек артып келеді.</div>
+            </div>
+          </div>
+
+          <div class="prospect-item">
+            <div class="pi-icon">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="12" fill="rgba(10,191,163,.08)"/>
+                <circle cx="20" cy="20" r="8" stroke="#0ABFA3" stroke-width="2"/>
+                <path d="M17 20 L19 22 L23 18" stroke="#0ABFA3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="pi-title">Жан-жақты қолданылады</div>
+              <div class="pi-desc">Банк, медицина, мемлекеттік органдар, логистика — барлық саладан жұмыс табуға болады.</div>
+            </div>
+          </div>
+
+          <div class="prospect-item">
+            <div class="pi-icon">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="12" fill="rgba(139,92,246,.08)"/>
+                <circle cx="20" cy="15" r="5" stroke="#8B5CF6" stroke-width="2"/>
+                <path d="M12 30 C12 25 28 25 28 30" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="pi-title">Халықаралық мүмкіндік</div>
+              <div class="pi-desc">Шетелде де, remote форматта да жұмыс жасауға болады. Visa Sponsorship бар компаниялар көп.</div>
+            </div>
+          </div>
+
+          <div class="prospect-item">
+            <div class="pi-icon">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="12" fill="rgba(255,179,15,.08)"/>
+                <path d="M20 10 L23 17 L31 17 L25 22 L27 30 L20 25 L13 30 L15 22 L9 17 L17 17 Z" stroke="#FFB30F" stroke-width="2" fill="none" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="pi-title">Үздіксіз даму</div>
+              <div class="pi-desc">AI, blockchain, IoT — технология үнемі жаңарып отырады. Маман да бірге өседі.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── QUOTE ──────────────────────────────────────────────────── -->
+  <section id="quote">
+    <div class="quote-inner reveal">
+      <span class="quote-mark">&ldquo;</span>
+      <p class="quote-text">
+        Ақпараттық жүйелер маманы — болашақтың архитекторы.
+        Деректер мен технологияны адам игілігіне айналдыратын тұлға.
+      </p>
+      <div class="quote-author">— Цифрлық Қазақстан 2030 стратегиясы</div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo">АЖ<span style="color:var(--coral)">.</span>kz</div>
+        <p>Ақпараттық жүйелер мамандығы — цифрлық болашаққа апаратын жол.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Бөлімдер</h4>
+        <ul>
+          <li><a href="#about">Мамандық туралы</a></li>
+          <li><a href="#skills">Негізгі дағдылар</a></li>
+          <li><a href="#career">Мансап жолы</a></li>
+          <li><a href="#tech">Технологиялар</a></li>
+          <li><a href="#prospects">Болашақ</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Байланыс</h4>
+        <ul>
+          <li><a href="#">info@aj.kz</a></li>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Менің Мамандығым — Ақпараттық Жүйелер</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem">v1.0.0</span>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ────────────────────────────────────────────────── -->
+  <script>
+    // Custom cursor
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left  = mx + 'px';
+      dot.style.top   = my + 'px';
     });
-  },55);
-})();
 
-const obs=new IntersectionObserver(en=>{
-  en.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.sfill').forEach(b=>b.style.width=b.dataset.w+'%');});
-},{threshold:.3});
-document.querySelectorAll('#skills').forEach(s=>obs.observe(s));
+    (function animRing() {
+      rx += (mx - rx) * .12;
+      ry += (my - ry) * .12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
 
-const msgs=[
-  'попробуй: ↑↑↓↓←→←→BA',
-  'nigger is not a function',
-  'console.log был здесь',
-  'git gay → это ты',
-  'работает — не трогай',
-  '// todo: разобраться (2005)',
-  'npm install Елнур — not found',
-  'position: absolute; проблема: уник',
-  'это фича, не баг',
-  'инпут лаг — традиция',
-];
-let ti=0;
-const tel=document.getElementById('toast');
-const showT=m=>{tel.textContent=m;tel.classList.add('on');setTimeout(()=>tel.classList.remove('on'),3600);};
-setInterval(()=>showT(msgs[ti++%msgs.length]),9000);
-setTimeout(()=>showT(msgs[0]),2800);
+    document.querySelectorAll('a, button, .skill-card, .prospect-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1.7)';
+        ring.style.opacity   = '.4';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.opacity   = '.6';
+      });
+    });
 
-document.querySelectorAll('.badge').forEach(b=>{
-  const q=['сертифицировано ✓','это фича','as designed','не баг','работает у меня','сон!'];
-  b.addEventListener('click',()=>showT(q[Math.floor(Math.random()*q.length)]));
-});
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
 
-const kseq=[38,38,40,40,37,39,37,39,66,65];let ki=0;
-document.addEventListener('keydown',e=>{
-  if(e.keyCode===kseq[ki]){ki++;if(ki===kseq.length){document.getElementById('kona').classList.add('on');ki=0;}}
-  else ki=0;
-});
-</script>
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Skill bars animation
+    const barObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            const w = bar.dataset.width;
+            setTimeout(() => { bar.style.width = w + '%'; }, 300);
+          });
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.skill-card').forEach(card => barObserver.observe(card));
+
+    // Typewriter for hero badge
+    const badge = document.querySelector('.hero-badge');
+    if (badge) {
+      const full = badge.textContent.trim();
+      badge.innerHTML = '<span class="badge-dot"></span><span id="tw"></span>';
+      const tw = document.getElementById('tw');
+      let i = 0;
+      const type = () => {
+        if (i < full.length) {
+          tw.textContent += full[i++];
+          setTimeout(type, 48);
+        }
+      };
+      setTimeout(type, 600);
+    }
+
+    // Counter animation for hero stats
+    document.querySelectorAll('.stat-num').forEach(el => {
+      const text = el.textContent;
+      const num  = parseFloat(text.replace(/[^0-9.]/g,''));
+      const prefix = text.match(/^[^0-9]*/)?.[0] || '';
+      const suffix = text.match(/[^0-9]+$/)?.[0] || '';
+      if (!num) return;
+      let start = null;
+      const dur = 1800;
+      const step = ts => {
+        if (!start) start = ts;
+        const prog = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - prog, 3);
+        el.textContent = prefix + (Number.isInteger(num) ? Math.round(ease*num) : (ease*num).toFixed(0)) + suffix;
+        if (prog < 1) requestAnimationFrame(step);
+      };
+      // trigger on scroll
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { requestAnimationFrame(step); io.disconnect(); }
+      });
+      io.observe(el);
+    });
+  </script>
+
 </body>
 </html>
